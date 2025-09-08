@@ -1,62 +1,41 @@
-'use client';
-
-import { useState } from 'react';
-import Orb from '@/ui/organisms/Orb';
-import TierCard from '@/ui/molecules/TierCard';
-
-const TIERS = [
-  { title: 'Seed',   amount: 20,  perk: 'Founder badge + thank-you wall' },
-  { title: 'Sprout', amount: 50,  perk: 'Hempin tote + founder badge' },
-  { title: 'Stem',   amount: 100, perk: 'T-shirt + founder badge' },
-  { title: 'Field',  amount: 500, perk: 'Showroom invite + all perks' }
-];
+// src/app/page.tsx
+import Orb from '../ui/organisms/Orb';
 
 export default function FundHome() {
-  const [selected, setSelected] = useState<number | null>(null);
-
   return (
-    <main className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
-      <Orb />
+    <main className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-16 text-center overflow-hidden">
+      {/* Background orb */}
+      <Orb className="absolute inset-0" />
 
-      <section className="relative z-10 w-full max-w-5xl px-6">
-        <header className="text-center space-y-3">
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">Fund Hempin</h1>
-          <p className="text-zinc-400 max-w-2xl mx-auto">
-            Help launch a profile-centered hemp ecosystem: farmers, brands, factories, and people connected through one glowing nebula.
-          </p>
-          <p className="text-sm text-zinc-500">HEMPIN — 2025</p>
-        </header>
-
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {TIERS.map((t, i) => (
-            <TierCard
-              key={t.title}
-              title={t.title}
-              amount={t.amount}
-              perk={t.perk}
-              onSelect={() => setSelected(i)}
-            />
-          ))}
-        </div>
-
-        <div className="mt-8 text-center">
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-white/15 bg-white/10 px-4 py-2 text-sm hover:bg-white/15 transition"
-          >
-            Back to hempin.org
-          </a>
-        </div>
-
-        {/* Placeholder: next step we’ll add PledgeModal + Supabase */}
-        {selected !== null && (
-          <div className="mt-6 text-center text-zinc-300">
-            Selected tier: <strong>{TIERS[selected].title}</strong> — ${TIERS[selected].amount}.
-            <br />
-            We’ll wire the pledge modal + Supabase next.
-          </div>
-        )}
+      {/* App intro */}
+      <section className="relative z-10 space-y-5 max-w-2xl">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+          Fund Hemp Projects
+        </h1>
+        <p className="opacity-75">
+          Welcome to <strong>fund.hempin.org</strong> — our hub for backing hemp
+          innovation worldwide. Here you can support active campaigns and help bring
+          regenerative projects to life.
+        </p>
       </section>
+
+      {/* Active campaign list */}
+      <section className="relative z-10 mt-12 w-full max-w-lg">
+        <a
+          href="/campaigns/hempin-launch"
+          className="block rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-left hover:bg-white/10 transition"
+        >
+          <div className="text-sm opacity-70">🌱 Active Campaign</div>
+          <div className="mt-1 text-xl font-semibold">Hempin Launch</div>
+          <p className="mt-2 text-sm opacity-80">
+            Kickstart the Hempin ecosystem. Your support helps us build tools for
+            farmers, brands, and citizens in the hemp universe.
+          </p>
+          <div className="mt-3 text-xs opacity-60">View tiers & pledge →</div>
+        </a>
+      </section>
+
+      <p className="relative z-10 text-xs opacity-50 pt-12">HEMPIN FUND — 2025</p>
     </main>
   );
 }
