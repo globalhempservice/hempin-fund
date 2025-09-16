@@ -3,19 +3,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base theme (dark canvas; text high-contrast) */
-:root {
-  --bg: #0b0b0d;
-  --text: #e5e7eb; /* zinc-200 */
+/* Shared tokens (dark canvas, high-contrast text) */
+:root{
+  --bg:#0b0b0d;
+  --surface:#15151c;
+  --text:#e5e7eb;    /* zinc-200 */
+  --text-2:#b9b9c7;  /* subtle copy */
+
+  /* Universe accent — FUND = pink */
+  --brand:#EC4899;
 }
 
+/* Base */
 html, body { height: 100%; }
-body {
+body{
   background-color: var(--bg);
   color: var(--text);
 }
 
-/* Orb motion (gentle, battery-safe) */
+/* Reusable UI helpers — align with other universes */
+.card{ @apply bg-white/5 border border-white/10 rounded-xl p-6 backdrop-blur; }
+.btn{ @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition; }
+.btn-primary{ @apply btn text-white hover:brightness-110; background:var(--brand); }
+.btn-ghost{ @apply btn bg-white/5 hover:bg-white/10; }
+.text-brand{ color: var(--brand); }
+
+/* Orb motion (kept from your current design) */
 @keyframes orb-float {
   0%   { transform: translateY(-4px) scale(1); }
   50%  { transform: translateY( 4px) scale(1.015); }
@@ -31,8 +44,5 @@ body {
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .animate-orb,
-  .animate-orb-slow {
-    animation: none !important;
-  }
+  .animate-orb, .animate-orb-slow { animation: none !important; }
 }
