@@ -4,6 +4,7 @@ node_modules/
 out/
 dist/
 # Env / local
+.env.local
 .env
 .env.*
 !.env.example
