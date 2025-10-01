@@ -1,100 +1,114 @@
 // src/app/me/page.tsx
-import { requireUser } from '@/lib/auth/requireUser';
-import { createAdminClient } from '@/lib/supabase/admin';
-import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase/server';
 
 type PledgeRow = {
   id: string;
-  created_at: string | null;
-  amount: number;
-  currency: string;
-  status: string | null;
+  campaign_id: string | null;
   tier_id: string | null;
-  campaign: { id: string; slug: string; title: string } | null;
-  tier: { id: string; title: string } | null;
+  amount: number | null;
+  currency: string | null;
+  status: string | null;
+  created_at: string;
 };
 
-export default async function MyPledgesPage() {
-  // 1) Auth gate
-  const user = await requireUser('/me');
+export default async function MePage() {
+  const supa = createServerClient(cookies());
+  const { data: { user } } = await supa.auth.getUser();
 
-  // 2) DB query as service (server only)
-  const db = createAdminClient();
-
-  const { data: pledges, error } = await db
-    .from('pledges')
-    .select(`
-      id, created_at, amount, currency, status, tier_id,
-      campaign:campaigns!inner ( id, slug, title ),
-      tier:tiers ( id, title )
-    `)
-    .eq('email', user.email)             // filter by the authed user’s email
-    .order('created_at', { ascending: false })
-    .limit(50);
-
-  if (error) {
-    // Soft failure rendering
+  if (!user) {
     return (
-      <main className="container" style={{ padding: 16 }}>
-        <section className="hemp-panel" style={{ padding: 16 }}>
-          <h1 className="display-title">My pledges</h1>
-          <p className="muted" style={{ marginTop: 8 }}>
-            Couldn’t load your pledges right now: {error.message}
-          </p>
-        </section>
+      <main className="container" style={{ padding: '18px 12px' }}>
+        <article className="hemp-panel center" style={{ padding: 16 }}>
+          <h1 className="display-title">Please sign in</h1>
+          <p className="muted" style={{ marginTop: 8 }}>You need to be signed in to see your pledges.</p>
+          <div className="center" style={{ marginTop: 12 }}>
+            <a className="btn primary thruster" href="https://auth.hempin.org">Sign in</a>
+          </div>
+        </article>
       </main>
     );
   }
 
-  const list = (pledges || []) as unknown as PledgeRow[];
+  // 1) get pledges for this user
+  const { data: pledges = [] } = await supa
+    .from('pledges')
+    .select('id,campaign_id,tier_id,amount,currency,status,created_at')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false }) as { data: PledgeRow[] | null };
+
+  // 2) fetch related titles in one go
+  const campaignIds = [...new Set(pledges.map(p => p.campaign_id).filter(Boolean))] as string[];
+  const tierIds     = [...new Set(pledges.map(p => p.tier_id).filter(Boolean))] as string[];
+
+  const [{ data: campaigns = [] }, { data: tiers = [] }] = await Promise.all([
+    campaignIds.length
+      ? supa.from('campaigns').select('id, title, slug').in('id', campaignIds)
+      : Promise.resolve({ data: [] as any }),
+    tierIds.length
+      ? supa.from('tiers').select('id, title').in('id', tierIds)
+      : Promise.resolve({ data: [] as any }),
+  ]);
+
+  const campById = new Map(campaigns.map((c:any) => [c.id, c]));
+  const tierById = new Map(tiers.map((t:any) => [t.id, t]));
 
   return (
-    <main className="container" style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}>
-      {/* Mini profile card */}
+    <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '18px 12px 28px' }}>
+      {/* Profile card */}
       <section className="hemp-panel" style={{ padding: 16 }}>
         <p className="eyebrow">Profile</p>
-        <h1 className="display-title" style={{ fontSize: 'clamp(22px,3.6vw,32px)' }}>
-          {user.email}
-        </h1>
-        <p className="muted" style={{ marginTop: 6 }}>Early Backer badge will appear after your first captured pledge.</p>
-        <div className="center" style={{ marginTop: 10 }}>
-          <a className="btn ghost" href="mailto:support@hempin.org?subject=Fund%20support">Contact admin</a>
+        <h2 style={{ margin: '4px 0 0' }} className="planet-title">{user.email}</h2>
+        <p className="muted" style={{ marginTop: 8 }}>
+          Your <strong>Early Backer</strong> badge will be delivered on <strong>Nov 1</strong> with the rollout of Hemp’in user profiles.
+        </p>
+        <div className="center" style={{ marginTop: 12 }}>
+          <a className="btn ghost" href="mailto:hello@hempin.org?subject=Hempin%20Fund%20support">Contact admin</a>
         </div>
       </section>
 
-      {/* Pledges list or empty state */}
-      {list.length === 0 ? (
-        <section className="hemp-panel" style={{ marginTop: 16, padding: 16, textAlign: 'center' }}>
-          <p className="muted">You haven’t pledged yet.</p>
-          <div style={{ marginTop: 10 }}>
-            <Link className="btn primary thruster" href="/campaigns/hempin-launch">Explore Hemp’in Launch</Link>
+      {/* Pledges */}
+      <section className="hemp-panel" style={{ marginTop: 16, padding: 16 }}>
+        <p className="eyebrow">My pledges</p>
+
+        {pledges.length === 0 ? (
+          <div className="muted" style={{ marginTop: 8 }}>
+            You haven’t pledged yet — <a className="link" href="/campaigns/hempin-launch">check out Hemp’in Launch</a>.
           </div>
-        </section>
-      ) : (
-        <section className="hemp-panel" style={{ marginTop: 16, padding: 16 }}>
-          <p className="eyebrow">My pledges</p>
+        ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: '10px 0 0', display: 'grid', gap: 10 }}>
-            {list.map((p) => (
-              <li key={p.id} className="hemp-panel" style={{ padding: 12 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'baseline' }}>
-                  <strong>{p.campaign?.title || 'Campaign'}</strong>
-                  <span className="pill">${p.amount.toLocaleString('en-US')} {p.currency}</span>
-                </div>
-                <div className="muted" style={{ marginTop: 4 }}>
-                  {p.tier?.title ? <>Tier: <b>{p.tier.title}</b> · </> : null}
-                  Status: <b>{p.status || 'recorded'}</b> ·{' '}
-                  {p.created_at ? new Date(p.created_at).toLocaleString() : 'date n/a'}
-                </div>
-                {p.campaign?.slug && (
-                  <div style={{ marginTop: 8 }}>
-                    <Link className="btn ghost" href={`/campaigns/${p.campaign.slug}`}>View campaign</Link>
+            {pledges.map((p) => {
+              const camp = p.campaign_id ? campById.get(p.campaign_id) : null;
+              const tier = p.tier_id ? tierById.get(p.tier_id) : null;
+              const amount = p.amount ?? 0;
+              const curr = (p.currency || 'USD').toUpperCase();
+              const when = new Date(p.created_at);
+              const dateStr = when.toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+              return (
+                <li key={p.id} className="hemp-panel" style={{ padding: 14, display: 'grid', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10 }}>
+                    <strong style={{ letterSpacing: '.01em' }}>
+                      {camp?.title || 'Campaign'}{tier?.title ? ` — ${tier.title}` : ''}
+                    </strong>
+                    <span className="pill" style={{ fontWeight: 800 }}>
+                      ${amount.toLocaleString()} {curr}
+                    </span>
                   </div>
-                )}
-              </li>
-            ))}
+                  <div className="muted" style={{ fontSize: '.92rem' }}>
+                    Status: <strong>{p.status || 'captured'}</strong> · {dateStr}
+                  </div>
+                  {camp?.slug && (
+                    <div>
+                      <a className="btn ghost" href={`/campaigns/${camp.slug}`}>View campaign</a>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
-        </section>
-      )}
+        )}
+      </section>
     </main>
   );
 }
