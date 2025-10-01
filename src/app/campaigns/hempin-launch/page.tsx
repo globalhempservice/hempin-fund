@@ -158,8 +158,7 @@ export default function LaunchCampaignPage() {
                     {/* Primary flow → /pay (it will enforce login via auth hub if needed) */}
                     <a
                       className="btn primary thruster"
-                      href={`/pay?campaign=hempin-launch&tier=${encodeURIComponent(t.id)}&amount=${t.amount}`}
-                      style={{ flex: 1 }}
+                      href={`/pay/hempin-launch?tier=${encodeURIComponent(t.id)}&amount=${t.amount}`}                      style={{ flex: 1 }}
                     >
                       Pledge ${format(t.amount)}
                     </a>

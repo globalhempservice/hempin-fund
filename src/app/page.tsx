@@ -22,9 +22,9 @@ export default function FundHome() {
         cta="Visit campaign"
         image={{ src: '/images/featured/hempin-launch.jpg', alt: 'Hemp’in Launch artwork' }}  // adjust path
         status="live"                     // 'upcoming' | 'live' | 'closed'
-        meta={['30-day window', 'Early Backer multipass']}
-        raised={23400}                    // optional
-        goal={50000}                      // optional
+        meta={['30-day flash raise', 'Early Backer badges', 'Multipass Card']}
+        raised={220}                    // optional
+        goal={20000}                      // optional
         currency="USD"
       />
 

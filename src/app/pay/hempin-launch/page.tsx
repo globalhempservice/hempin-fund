@@ -1,45 +1,48 @@
+// src/app/pay/hempin-launch/page.tsx
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { requireUser } from '@/lib/auth/requireUser';
-import PayPalButtons from '@/components/fund/PayPalButtons';
+import PayPalButtonsClient from '@/components/fund/PayPalButtonsClient';
 
-// ---- Server page (guards auth) ----
 export default async function PayHempinLaunchPage({
   searchParams,
 }: {
-  searchParams: { tier?: string; amount?: string };
+  searchParams: { tier?: string; amount?: string }
 }) {
-  // 1) Must be signed in (shared auth helper)
+  // 1) Must be signed in
   const user = await requireUser('/pay/hempin-launch');
 
   // 2) Resolve tier + amount
   const TIER_MAP: Record<string, { label: string; amount: number }> = {
-    voyager:       { label: 'Voyager (Supporter)', amount: 20 },
-    navigator:     { label: 'Navigator',           amount: 50 },
-    builder:       { label: 'Builder',             amount: 100 },
-    explorer:      { label: 'Explorer',            amount: 250 },
-    pioneer:       { label: 'Pioneer',             amount: 1000 },
-    constellation: { label: 'Constellation',       amount: 5000 },
-    supernova:     { label: 'Supernova',           amount: 10000 },
+    seed:          { label: 'Seed (Supporter)', amount: 20 },
+    sprout:        { label: 'Sprout',           amount: 50 },
+    stem:          { label: 'Stem',             amount: 100 },
+    leaf:          { label: 'Leaf',             amount: 250 },
+    fiber:         { label: 'Fiber',            amount: 500 },
+    bast:          { label: 'Bast',             amount: 1000 },
+    core:          { label: 'Core',             amount: 2500 },
+    field:         { label: 'Field',            amount: 5000 },
+    cosmos:        { label: 'Cosmos',           amount: 10000 },
   };
 
   const tierKey = (searchParams.tier || '').toLowerCase();
   const tier = TIER_MAP[tierKey];
-
   const parsed = Number(searchParams.amount);
-  // If a known tier, use its fixed amount; otherwise allow custom (min $5, max $10,000)
-  const custom = Number.isFinite(parsed) ? Math.min(10000, Math.max(5, parsed)) : 20;
-  const amount = tier ? tier.amount : custom;
 
-  const label = tier ? tier.label : (Number.isFinite(parsed) ? 'Custom pledge' : 'Supporter');
+  // If a known tier, use fixed amount; otherwise custom (min $5, max $10k; default $20)
+  const amount =
+    tier?.amount ??
+    (Number.isFinite(parsed) ? Math.min(10000, Math.max(5, parsed)) : 20);
 
-  // 3) Compute absolute return URL (used in PayPal context & our UX)
+  const label = tier?.label || (Number.isFinite(parsed) ? 'Custom pledge' : 'Supporter');
+
+  // 3) Compute absolute origin (for PayPal return URLs)
   const h = headers();
   const host = h.get('x-forwarded-host') || h.get('host') || '';
   const proto = h.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
   const origin = `${proto}://${host}`;
 
-  // 4) PayPal env (client id must exist)
+  // 4) Env
   const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
   if (!PAYPAL_CLIENT_ID) {
     if (process.env.NODE_ENV !== 'production') {
@@ -57,15 +60,17 @@ export default async function PayHempinLaunchPage({
         </main>
       );
     }
-    // In prod, just send back to campaign
     redirect('/campaigns/hempin-launch');
   }
 
-  const PAYPAL_ENV = (process.env.NEXT_PUBLIC_PAYPAL_ENV || 'sandbox').toLowerCase(); // 'live' | 'sandbox'
+  const PAYPAL_ENV = (process.env.NEXT_PUBLIC_PAYPAL_ENV || 'sandbox').toLowerCase() as
+    | 'sandbox'
+    | 'live'
+    | string;
 
   return (
     <main className="min-h-screen grid place-items-center px-4">
-      <section className="hemp-panel auth-card p-6 md:p-8" style={{ paddingTop: 18 }}>
+      <section className="hemp-panel auth-card p-6 md:p-8" style={{ paddingTop: 18, maxWidth: 680 }}>
         <div className="center">
           <p className="eyebrow">Hemp’in Funding · Payment</p>
           <h1 className="display-title">Complete your pledge</h1>
@@ -74,32 +79,27 @@ export default async function PayHempinLaunchPage({
 
         {/* Summary */}
         <div style={{ marginTop: 14 }}>
-          <div
-            className="glassish"
-            style={{
-              display: 'grid',
-              gap: 8,
-              padding: 12,
-              borderRadius: 12,
-              background: 'rgba(255,255,255,.035)',
-              border: '1px solid rgba(255,255,255,.08)',
-            }}
-          >
+          <div className="glassish" style={{
+            display:'grid', gap:8, padding:12,
+            borderRadius:12,
+            background:'rgba(255,255,255,.035)',
+            border:'1px solid rgba(255,255,255,.08)'
+          }}>
             <Row label="Campaign" value="Hemp’in Launch (LIFE)" />
-            <Row label="Tier" value={label} />
-            <Row label="Amount" value={`$${amount.toFixed(2)} USD`} />
+            <Row label="Tier"     value={label} />
+            <Row label="Amount"   value={`$${amount.toFixed(2)} USD`} />
             <Row label="Signed in" value={user.email || '—'} />
           </div>
 
-          <p className="muted" style={{ marginTop: 10, fontSize: '.9rem', textAlign: 'center' }}>
+          <p className="muted" style={{ marginTop: 10, fontSize: '.9rem', textAlign:'center' }}>
             Your payment is processed securely by PayPal. You’ll receive the
             <b> Early Backer</b> badge and your <b>Multipass</b> will activate after payment clears.
           </p>
         </div>
 
-        {/* PayPal Buttons (client component) */}
+        {/* PayPal Buttons (client) */}
         <div style={{ marginTop: 16 }}>
-          <PayPalButtons
+          <PayPalButtonsClient
             amount={amount}
             tierKey={tierKey}
             label={label}
@@ -109,9 +109,8 @@ export default async function PayHempinLaunchPage({
           />
         </div>
 
-        {/* Footer actions */}
         <div className="center" style={{ marginTop: 12 }}>
-          <a className="btn ghost" href={`/campaigns/hempin-launch?tier=${encodeURIComponent(tierKey || 'voyager')}`}>
+          <a className="btn ghost" href={`/campaigns/hempin-launch?tier=${encodeURIComponent(tierKey || 'seed')}`}>
             ← Back to campaign
           </a>
         </div>
@@ -125,12 +124,11 @@ export default async function PayHempinLaunchPage({
   );
 }
 
-// Small display row
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rowish" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12 }}>
-      <span className="muted" style={{ opacity: .9 }}>{label}</span>
-      <span style={{ fontWeight: 700 }}>{value}</span>
+    <div className="rowish" style={{ display:'grid', gridTemplateColumns:'1fr auto', gap:12 }}>
+      <span className="muted" style={{ opacity:.9 }}>{label}</span>
+      <span style={{ fontWeight:700 }}>{value}</span>
     </div>
   );
 }
