@@ -1,5 +1,5 @@
 import FundHero from '@/components/fund/FundHero';
-import OrbitalDivider from '@/components/dividers/OrbitalDivider';
+import NebulalDivider from '@/components/dividers/NebulaDivider';
 import WorkTeaser from '@/components/fund/WorkTeaser';
 
 export const dynamic = 'force-dynamic';
@@ -10,7 +10,7 @@ export default function FundHome() {
       {/* 1) What is Hemp’in Fund? */}
       <FundHero />
 
-      <OrbitalDivider label="featured" />
+      <NebulaDivider label="featured" />
 
       {/* 2) Featured LIFE campaign */}
       <section className="section" id="featured">
@@ -31,7 +31,7 @@ export default function FundHome() {
         </div>
       </section>
 
-      <OrbitalDivider label="upcoming" />
+      <NebulaDivider label="upcoming" />
 
       {/* 3) Upcoming (with pink aura + special WORK tile) */}
       <section className="section" id="upcoming">
@@ -127,7 +127,7 @@ export default function FundHome() {
         </div>
       </section>
 
-      <OrbitalDivider label="pros" compact />
+      <NebulaDivider label="pros" compact />
 
       {/* 4) For Hemp Professionals (keep, but no “live example” button) */}
       <WorkTeaser />

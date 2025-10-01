@@ -299,3 +299,45 @@ main{flex:1 0 auto}
 @keyframes dashDrift {
   to { stroke-dashoffset: -120; }
 }
+
+/* ==== NebulaDivider styling ==== */
+.nebula-wrap{
+  position: relative;
+  display: block;
+  max-width: 1200px;
+  margin: 40px auto 28px;      /* breathing room between sections */
+  opacity: .98;
+}
+
+.nebula-svg{
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Gentle lateral drift (respects --nebula-dur from the component) */
+.nebula-svg.is-animated{
+  animation: nebula-drift var(--nebula-dur, 12s) linear infinite;
+  will-change: transform;
+}
+@keyframes nebula-drift{
+  from { transform: translateX(0); }
+  to   { transform: translateX(-1.8%); }
+}
+
+/* Section rhythm so dividers don't feel “stacked” */
+.section { padding: 84px 0; }
+.hero    { padding-bottom: 96px; }
+
+/* Optional: nudge the divider toward FUND pink without changing TS:
+   a faint rose glow behind each divider */
+.nebula-wrap::before{
+  content:"";
+  position:absolute;
+  inset:-22px -6% auto -6%;
+  height: 120px;
+  background: radial-gradient(420px 160px at 82% 36%, rgba(236,72,153,.18), transparent 70%);
+  filter: blur(28px);
+  pointer-events:none;
+  z-index: -1;
+}
