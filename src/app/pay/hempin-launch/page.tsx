@@ -28,8 +28,10 @@ export default async function PayHempinLaunchPage({
   const parsed = Number(searchParams.amount)
   // If a known tier, use its fixed amount; otherwise allow custom (min $5, max $10,000)
   const amount =
-    tier?.amount ??
-    Math.min(10000, Math.max(5, Number.isFinite(parsed) ? parsed : 0)) || 20
+  tier?.amount ??
+  (Number.isFinite(parsed)
+    ? Math.min(10000, Math.max(5, parsed))
+    : 20);
 
   const label = tier?.label || (parsed ? `Custom pledge` : 'Supporter')
 
