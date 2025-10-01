@@ -1,147 +1,150 @@
-import * as React from 'react';
+import FundHero from '@/components/fund/FundHero';
+import OrbitalDivider from '@/components/dividers/OrbitalDivider';
+import WorkTeaser from '@/components/fund/WorkTeaser';
 
-/**
- * OrbitalDivider
- * A seeded, lightweight SVG "flight path" between sections.
- *
- * Props:
- * - label: string (seed + optional caption for a11y)
- * - compact?: boolean  -> shorter arc (good for mobile dense sections)
- * - animate?: boolean  -> stroke dash drift (disabled by prefers-reduced-motion via CSS)
- */
-type Props = {
-  label: string;
-  compact?: boolean;
-  animate?: boolean;
-};
+export const dynamic = 'force-dynamic';
 
-export default function OrbitalDivider({ label, compact = false, animate = true }: Props) {
-  // --- tiny seeded RNG (deterministic per label) ---
-  const seed = hash32(label);
-  const rnd = mulberry32(seed);
-
-  // SVG viewport
-  const width = 1200;
-  const height = compact ? 90 : 120;
-
-  // Endpoints (as % of width); small jitter per divider
-  const x1 = lerp(0.14, 0.22, rnd());
-  const x2 = lerp(0.78, 0.86, rnd());
-  const yBase = 0.62; // normalized baseline (down from top)
-  const y1 = height * (yBase + lerp(-0.02, 0.02, rnd()));
-  const y2 = height * (yBase + lerp(-0.02, 0.02, rnd()));
-
-  // Curvature: flip up/down per seed and vary magnitude
-  const flip = rnd() > 0.5 ? 1 : -1;
-  const curve = (compact ? lerp(20, 40, rnd()) : lerp(28, 56, rnd())) * flip;
-
-  // Control point for quadratic curve
-  const cx = ((x1 + x2) / 2) * width + lerp(-40, 40, rnd());
-  const cy = (height * 0.35) + curve;
-
-  const p1x = x1 * width;
-  const p2x = x2 * width;
-
-  const d = `M ${p1x.toFixed(1)} ${y1.toFixed(1)} Q ${cx.toFixed(1)} ${cy.toFixed(
-    1
-  )} ${p2x.toFixed(1)} ${y2.toFixed(1)}`;
-
-  // Choose one of three soft aurora palettes
-  const palette = pickPalette(rnd());
-  const gid = `grad-${seed.toString(36)}`;
-
-  // Optional dash pattern variation
-  const dashA = Math.round(lerp(4, 10, rnd()));
-  const dashB = Math.round(lerp(8, 18, rnd()));
-  const strokeDasharray = `${dashA} ${dashB}`;
-
-  // Planets (endpoints) sizes + subtle glow
-  const planetR = 4 + Math.round(lerp(0, 2, rnd()));
-  const planetGlow = 10 + Math.round(lerp(0, 6, rnd()));
-
+export default function FundHome() {
   return (
-    <div aria-label={label} role="separator" className="orbital-wrap" data-label={label}>
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        width="100%"
-        height={height}
-        preserveAspectRatio="xMidYMid slice"
-        className="orbital-svg"
-      >
-        <defs>
-          <linearGradient id={gid} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={palette[0]} stopOpacity="0.9" />
-            <stop offset="50%" stopColor={palette[1]} stopOpacity="0.8" />
-            <stop offset="100%" stopColor={palette[2]} stopOpacity="0.9" />
-          </linearGradient>
+    <>
+      {/* 1) What is Hemp’in Fund? */}
+      <FundHero />
 
-          <filter id={`glow-${gid}`} x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation={planetGlow} result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+      <OrbitalDivider label="featured" />
 
-        {/* flight path */}
-        <path
-          d={d}
-          fill="none"
-          stroke={`url(#${gid})`}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="0.55"
-          className={`orbital-path${animate ? ' is-animated' : ''}`}
-          style={{ strokeDasharray }}
-        />
+      {/* 2) Featured LIFE campaign */}
+      <section className="section" id="featured">
+        <div className="container">
+          <div className="center">
+            <p className="eyebrow">Featured campaign</p>
+            <h2 className="display-title hemp-underline-aurora">Hemp’in Launch</h2>
+          </div>
 
-        {/* endpoint planets */}
-        <g filter={`url(#glow-${gid})`}>
-          <circle cx={p1x} cy={y1} r={planetR} fill={palette[0]} opacity="0.9" />
-          <circle cx={p2x} cy={y2} r={planetR} fill={palette[2]} opacity="0.9" />
-        </g>
-      </svg>
-    </div>
+          <article className="hemp-panel" style={{ marginTop: 16, padding: 16 }}>
+            <p className="muted" style={{ maxWidth: 760, margin: '0 auto' }}>
+              Support the public launch of Hemp’in: modules, infra, and community onboarding.
+            </p>
+            <div className="center" style={{ marginTop: 12 }}>
+              <a href="/campaigns/hempin-launch" className="btn primary thruster">Visit campaign</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <OrbitalDivider label="upcoming" />
+
+      {/* 3) Upcoming (with pink aura + special WORK tile) */}
+      <section className="section" id="upcoming">
+        <div className="container">
+          <div className="center">
+            <p className="eyebrow">Upcoming</p>
+            <h2 className="display-title hemp-underline-aurora">Next in the fund nebula</h2>
+            <p className="lede" style={{ marginTop: 10 }}>
+              Sneak peek at what’s docking soon. Follow along — we’ll open these as they’re ready.
+            </p>
+          </div>
+
+          {/* pink aura behind grid */}
+          <div style={{ position:'relative', marginTop: 18 }}>
+            <div aria-hidden
+                 style={{
+                   position:'absolute', inset:'-6% -6% auto -6%', height: 220,
+                   background:'radial-gradient(600px 240px at 50% 30%, rgba(236,72,153,.18), transparent 70%)',
+                   filter:'blur(38px)', zIndex:0, pointerEvents:'none'
+                 }} />
+            <div className="cards" style={{ position:'relative', zIndex:1 }}>
+              {/* NADA (disabled) */}
+              <a
+                href="/campaigns/nada-capsule"
+                className="card planet"
+                aria-disabled="true"
+                tabIndex={-1}
+                style={{ pointerEvents: 'none', opacity: 0.75, cursor: 'not-allowed' }}
+              >
+                <div className="planet-summary">
+                  <span className="planet-title">NADA — Hemp Capsule Collection</span>
+                  <span className="chevron">↗</span>
+                </div>
+                <div className="planet-content" style={{ maxHeight: 'none', opacity: 1 }}>
+                  <p className="muted" style={{ margin: 0 }}>
+                    Limited fashion drop powered by hemp textiles and community energy.
+                  </p>
+                  <div className="pipeline" style={{ marginTop: 10 }}>
+                    <span className="pill">UPCOMING</span>
+                    <span className="pill">Starts Nov 1</span>
+                    <span className="pill">15 days</span>
+                  </div>
+                </div>
+              </a>
+
+              {/* Thailand (disabled) */}
+              <a
+                href="/campaigns/thailand-farm"
+                className="card planet"
+                aria-disabled="true"
+                tabIndex={-1}
+                style={{ pointerEvents: 'none', opacity: 0.75, cursor: 'not-allowed' }}
+              >
+                <div className="planet-summary">
+                  <span className="planet-title">Thailand Farm Project</span>
+                  <span className="chevron">↗</span>
+                </div>
+                <div className="planet-content" style={{ maxHeight: 'none', opacity: 1 }}>
+                  <p className="muted" style={{ margin: 0 }}>
+                    Land + regenerative practices + local partners. Dates to be announced.
+                  </p>
+                  <div className="pipeline" style={{ marginTop: 10 }}>
+                    <span className="pill">UPCOMING</span>
+                    <span className="pill">Date TBA</span>
+                  </div>
+                </div>
+              </a>
+
+              {/* WORK — visually distinct (pink gradient card) */}
+              <a href="/work"
+                 className="card planet"
+                 style={{
+                   background: 'linear-gradient(180deg, rgba(236,72,153,.18), rgba(236,72,153,.06))',
+                   borderColor: 'rgba(236,72,153,.35)'
+                 }}>
+                <div className="planet-summary">
+                  <span className="planet-title">WORK — Host your campaign</span>
+                  <span className="chevron">↗</span>
+                </div>
+                <div className="planet-content" style={{ maxHeight: 'none', opacity: 1 }}>
+                  <p className="muted" style={{ margin: 0 }}>
+                    Professionals can apply to raise on Hemp’in. We’ll review interest to unlock creator tools.
+                  </p>
+                  <div className="pipeline" style={{ marginTop: 10 }}>
+                    <span className="pill">Visible now</span>
+                    <span className="pill">Creator tools in queue</span>
+                    <span className="pill">Submit interest</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <OrbitalDivider label="pros" compact />
+
+      {/* 4) For Hemp Professionals (keep, but no “live example” button) */}
+      <WorkTeaser />
+
+      {/* Footer (unchanged) */}
+      <footer className="site-footer">
+        <div className="container row">
+          <span className="muted tiny">© {new Date().getFullYear()} Hemp’in</span>
+          <nav className="tiny">
+            <a className="muted" href="/about">About</a>
+            <span className="muted" style={{ margin: '0 8px' }}>·</span>
+            <a className="muted" href="/work">WORK</a>
+            <span className="muted" style={{ margin: '0 8px' }}>·</span>
+            <a className="muted" href="/campaigns/hempin-launch">Hemp’in Launch</a>
+          </nav>
+        </div>
+      </footer>
+    </>
   );
-}
-
-/* ---------- helpers ---------- */
-
-// fast deterministic hash
-function hash32(str: string): number {
-  let h = 2166136261 >>> 0;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
-// seeded PRNG
-function mulberry32(a: number) {
-  return function () {
-    let t = (a += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function lerp(a: number, b: number, t: number) {
-  return a + (b - a) * t;
-}
-
-function pickPalette(t: number): [string, string, string] {
-  const palettes: Array<[string, string, string]> = [
-    // emerald → cyan → soft magenta
-    ['#34d399', '#60a5fa', '#f472b6'],
-    // teal → sky → violet
-    ['#14b8a6', '#38bdf8', '#a78bfa'],
-    // lime → aqua → rose
-    ['#84cc16', '#22d3ee', '#fb7185'],
-  ];
-  const idx = Math.floor(t * palettes.length) % palettes.length;
-  return palettes[idx];
 }
