@@ -1,160 +1,120 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useMemo } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-type KnownErr =
-  | 'cancelled'
-  | 'declined'
-  | 'expired'
-  | 'invalid'
-  | 'network'
-  | 'unknown';
+type Action = {
+  label: string;
+  href?: string;
+  onClick?: (router: ReturnType<typeof useRouter>) => void;
+};
 
 export default function PayErrorNotice() {
-  const sp = useSearchParams();
   const router = useRouter();
-  const [hidden, setHidden] = useState(false);
+  const qs = useSearchParams();
 
-  // Read and normalize the error code from the URL
-  const code: KnownErr | null = useMemo(() => {
-    const raw = (sp.get('pay_error') || '').toLowerCase().trim();
-    if (!raw) return null;
-    if (['cancelled', 'declined', 'expired', 'invalid', 'network'].includes(raw)) {
-      return raw as KnownErr;
+  // Read status flags from URL, e.g. ?pledge=ok|cancel|error
+  const pledge = (qs.get('pledge') || '').toLowerCase();
+
+  const { visible, tone, title, msg, actions } = useMemo(() => {
+    // default: hidden
+    let visible = false;
+    let tone: 'success' | 'warn' | 'error' = 'warn';
+    let title = '';
+    let msg = '';
+    let actions: Action[] = [];
+
+    if (pledge === 'ok') {
+      visible = true;
+      tone = 'success';
+      title = 'Thank you — pledge confirmed';
+      msg =
+        'Your payment was captured successfully. Your Early Backer badge and Multipass will activate shortly.';
+      actions = [
+        { label: 'View campaign', href: '/campaigns/hempin-launch' },
+        { label: 'Go to my pledges', href: '/me' },
+      ];
+    } else if (pledge === 'cancel') {
+      visible = true;
+      tone = 'warn';
+      title = 'Payment cancelled';
+      msg =
+        'No charge was made. You can try again any time — your selection is still available.';
+      actions = [
+        { label: 'Retry checkout', href: '/pay/hempin-launch' },
+        { label: 'Back to campaign', href: '/campaigns/hempin-launch' },
+      ];
+    } else if (pledge === 'error') {
+      visible = true;
+      tone = 'error';
+      title = 'Payment error';
+      msg =
+        'We could not complete the transaction. If this persists, try another method or contact support.';
+      actions = [
+        { label: 'Try again', href: '/pay/hempin-launch' },
+        {
+          label: 'Refresh',
+          onClick: (r) => r.refresh(),
+        },
+      ];
     }
-    return 'unknown';
-  }, [sp]);
 
-  // Optional: auto-clear the query param after first render (keeps URL clean)
-  useEffect(() => {
-    if (!code) return;
-    const url = new URL(window.location.href);
-    url.searchParams.delete('pay_error');
-    window.history.replaceState(null, '', url.toString());
-  }, [code]);
+    return { visible, tone, title, msg, actions };
+  }, [pledge]);
 
-  if (!code || hidden) return null;
+  if (!visible) return null;
 
-  const meta = getCopy(code);
+  const toneBorder =
+    tone === 'success'
+      ? 'rgba(16,185,129,.45)'
+      : tone === 'error'
+      ? 'rgba(239,68,68,.45)'
+      : 'rgba(234,179,8,.45)';
+
+  const toneBg =
+    tone === 'success'
+      ? 'rgba(16,185,129,.10)'
+      : tone === 'error'
+      ? 'rgba(239,68,68,.10)'
+      : 'rgba(234,179,8,.10)';
 
   return (
     <div
-      role="alert"
       className="hemp-panel"
       style={{
-        borderColor: 'rgba(244,63,94,.28)',
-        boxShadow:
-          '0 0 0 1px rgba(244,63,94,.18) inset, 0 10px 24px rgba(0,0,0,.35), 0 0 18px rgba(244,63,94,.12)',
-        background: 'rgba(244,63,94,.08)',
+        marginTop: 10,
         padding: 12,
-        display: 'grid',
-        gap: 8,
+        borderColor: toneBorder,
+        background: toneBg,
       }}
+      role={tone === 'error' ? 'alert' : 'status'}
+      aria-live="polite"
     >
-      <div style={{ display: 'flex', alignItems: 'start', gap: 10, justifyContent: 'space-between' }}>
-        <div style={{ display: 'grid', gap: 2 }}>
-          <strong style={{ letterSpacing: '.01em' }}>{meta.title}</strong>
-          <span className="muted" style={{ fontSize: '.95rem' }}>{meta.body}</span>
-        </div>
+      <div style={{ display: 'grid', gap: 8 }}>
+        <strong style={{ letterSpacing: '.01em' }}>{title}</strong>
+        <p className="muted" style={{ margin: 0 }}>
+          {msg}
+        </p>
 
-        <button
-          aria-label="Dismiss"
-          onClick={() => setHidden(true)}
-          className="pill"
-          style={{
-            background: 'rgba(255,255,255,.06)',
-            border: '1px solid rgba(255,255,255,.14)',
-            lineHeight: 1,
-          }}
-        >
-          ×
-        </button>
-      </div>
-
-      {meta.actions?.length ? (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {meta.actions.map((a, i) =>
-            a.kind === 'primary' ? (
-              <a key={i} href={a.href} className="btn primary">
-                {a.label}
-              </a>
-            ) : a.kind === 'ghost' ? (
-              <a key={i} href={a.href} className="btn ghost">
+          {actions.map((a, i) =>
+            a.href ? (
+              <a key={i} className="btn" href={a.href}>
                 {a.label}
               </a>
             ) : (
               <button
                 key={i}
                 className="btn"
-                onClick={() => (a.onClick ? a.onClick(router) : null)}
+                type="button"
+                onClick={() => a.onClick?.(router)}
               >
                 {a.label}
               </button>
-            )
+            ),
           )}
         </div>
-      ) : null}
+      </div>
     </div>
   );
-}
-
-function getCopy(code: KnownErr) {
-  switch (code) {
-    case 'cancelled':
-      return {
-        title: 'Payment cancelled',
-        body:
-          'No charge was made. If you changed your mind, you can try again anytime.',
-        actions: [
-          { kind: 'primary' as const, label: 'Try again', href: '#tiers' },
-        ],
-      };
-    case 'declined':
-      return {
-        title: 'Payment was declined',
-        body:
-          'Your provider did not approve the transaction. You may try another method or contact your bank.',
-        actions: [
-          { kind: 'primary' as const, label: 'Choose a different tier', href: '#tiers' },
-          { kind: 'ghost' as const, label: 'Back to campaign', href: '/campaigns/hempin-launch' },
-        ],
-      };
-    case 'expired':
-      return {
-        title: 'Session expired',
-        body:
-          'The checkout session timed out. Please start again and complete within the allotted time.',
-        actions: [
-          { kind: 'primary' as const, label: 'Restart checkout', href: '#tiers' },
-        ],
-      };
-    case 'invalid':
-      return {
-        title: 'Invalid checkout',
-        body:
-          'We couldn’t validate this checkout request. Please begin again from the campaign page.',
-        actions: [
-          { kind: 'primary' as const, label: 'Back to campaign', href: '/campaigns/hempin-launch' },
-        ],
-      };
-    case 'network':
-      return {
-        title: 'Network issue',
-        body:
-          'We hit a temporary connection problem. Please check your connection and try again.',
-        actions: [
-          { kind: 'primary' as const, label: 'Retry', href: '#tiers' },
-        ],
-      };
-    default:
-      return {
-        title: 'Something went wrong',
-        body:
-          'We couldn’t complete the payment. No funds were captured. You can try again in a moment.',
-        actions: [
-          { kind: 'primary' as const, label: 'Back to campaign', href: '/campaigns/hempin-launch' },
-        ],
-      };
-  }
 }
