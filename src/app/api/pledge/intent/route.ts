@@ -1,83 +1,53 @@
 // src/app/api/pledge/intent/route.ts
 import { NextResponse } from 'next/server'
-import { createServerClientSupabase } from '@/lib/supabase/server'
-
-type Body = {
-  campaign?: string
-  tier?: string
-  label?: string
-  currency?: string
-  amount?: number
-  returnTo?: string
-  // you can pass extra fields; we’ll tuck them into metadata
-  [k: string]: any
-}
+import { getServerClient } from '@/lib/supabase/server'   // uses @supabase/ssr + cookies
+import { createAdminClient } from '@/lib/supabase/admin'  // service role for DB writes
 
 export async function POST(req: Request) {
   try {
-    const supabase = createServerClientSupabase()
+    const body = await req.json()
+    const { campaign, tier, label, currency = 'USD', amount, returnTo } = body ?? {}
 
-    // Auth: must be signed in
-    const { data: { user }, error: userErr } = await supabase.auth.getUser()
-    if (userErr) throw userErr
-    if (!user) {
-      return NextResponse.json({ ok: false, error: 'Not signed in' }, { status: 401 })
+    if (!campaign || !amount) {
+      return NextResponse.json({ ok:false, error:'Missing fields' }, { status: 400 })
     }
 
-    const body = (await req.json()) as Body
+    // who is logged in?
+    const supa = getServerClient()
+    const { data: { user } } = await supa.auth.getUser()
+    if (!user) return NextResponse.json({ ok:false, error:'Not signed in' }, { status: 401 })
 
-    const campaign = (body.campaign || '').trim()
-    if (!campaign) {
-      return NextResponse.json({ ok: false, error: 'Missing campaign' }, { status: 400 })
-    }
+    const db = createAdminClient()
 
-    const amount = Number(body.amount)
-    if (!Number.isFinite(amount) || amount <= 0) {
-      return NextResponse.json({ ok: false, error: 'Invalid amount' }, { status: 400 })
-    }
+    // optional: look up campaign id from slug
+    const { data: camp, error: cErr } = await db
+      .from('campaigns')
+      .select('id, slug').eq('slug', campaign).single()
+    if (cErr || !camp) return NextResponse.json({ ok:false, error:'Campaign not found' }, { status: 404 })
 
-    const currency = (body.currency || 'USD').toUpperCase()
-    const tier = (body.tier || 'custom').toLowerCase()
-    const label = body.label?.toString().slice(0, 120) || 'Pledge'
-    const return_to = body.returnTo?.toString().slice(0, 400) || null
-
-    // Optional: stash any extra fields in metadata (safe JSON)
-    const { campaign: _c, amount: _a, currency: _cu, tier: _t, label: _l, returnTo: _r, ...rest } = body
-    const metadata = Object.keys(rest).length ? rest : null
-
-    // Insert a pending pledge intent
-    // Expected table (Supabase):
-    // pledges: id uuid (pk default gen_random_uuid()), campaign text, user_id uuid, email text,
-    // tier text, label text, amount numeric, currency text, status text, provider_order_id text,
-    // return_to text, metadata jsonb, created_at timestamptz default now(), updated_at timestamptz
-    const { data, error } = await supabase
+    // create a pledge row we can update on capture
+    const { data: row, error } = await db
       .from('pledges')
       .insert({
-        campaign,
-        user_id: user.id,
-        email: user.email,
-        tier,
-        label,
-        amount,
+        campaign_id: camp.id,
+        user_id: user.id,           // <-- critical for RLS
+        email: user.email,          // good to keep too
+        tier_key: tier ?? null,
+        label: label ?? null,
         currency,
-        status: 'intent',
-        provider_order_id: null,
-        return_to,
-        metadata,
+        amount,
+        status: 'intent',           // pending
+        metadata: { returnTo }
       })
       .select('id')
       .single()
 
-    if (error) throw error
+    if (error || !row) {
+      return NextResponse.json({ ok:false, error: error?.message ?? 'Insert failed' }, { status: 400 })
+    }
 
-    return NextResponse.json({ ok: true, pledgeId: data.id })
-  } catch (e: any) {
-    console.error('[pledge/intent] error', e?.message || e)
-    return NextResponse.json({ ok: false, error: 'Server error' }, { status: 500 })
+    return NextResponse.json({ ok:true, pledgeId: row.id })
+  } catch (e:any) {
+    return NextResponse.json({ ok:false, error: e?.message ?? 'Server error' }, { status: 500 })
   }
-}
-
-export async function OPTIONS() {
-  // Simple CORS preflight allowance if you ever call from other subs (kept minimal)
-  return NextResponse.json({ ok: true })
 }
