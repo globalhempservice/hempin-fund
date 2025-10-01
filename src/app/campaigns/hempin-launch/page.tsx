@@ -7,6 +7,7 @@
 
 import type { Metadata } from 'next';
 import PayErrorNotice from '@/components/fund/PayErrorNotice';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: "Hemp’in Launch — Fund the navigator",
@@ -43,7 +44,9 @@ export default function LaunchCampaignPage() {
 
       <section className="container" style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}>
         {/* Banner for payment errors, if any */}
-        <PayErrorNotice />
+        <Suspense fallback={null}>
+  <PayErrorNotice />
+</Suspense>
 
         {/* Header card */}
         <div
