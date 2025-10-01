@@ -1,7 +1,6 @@
 // src/app/api/pledge/capture/route.ts
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@/lib/supabase/server'   // ⬅️ rename import
+import { createServerClient } from '@/lib/supabase/server'   // ✅ no cookies import
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(req: Request) {
@@ -9,9 +8,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { pledgeId, orderId, status, amount, raw } = body ?? {}
 
-    // who is logged in?
-    // If your helper takes no args, use: const supa = createServerClient()
-    const supa = createServerClient(cookies())
+    const supa = createServerClient()                         // ✅ zero-arg
     const { data: { user } } = await supa.auth.getUser()
     if (!user) return NextResponse.json({ ok:false, error:'Not signed in' }, { status: 401 })
 
@@ -26,7 +23,7 @@ export async function POST(req: Request) {
           status: 'captured',
           paypal_order_id: orderId ?? null,
           amount: amount ?? null,
-          metadata: { ...raw }
+          metadata: { ...raw },
         })
         .eq('id', pledgeId)
 
@@ -34,7 +31,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok:true, pledgeId })
     }
 
-    // fallback: create if we didn’t get pledgeId
     const { data: row, error } = await db
       .from('pledges')
       .insert({
@@ -44,7 +40,7 @@ export async function POST(req: Request) {
         paypal_order_id: orderId ?? null,
         amount: amount ?? null,
         currency: 'USD',
-        metadata: { ...raw }
+        metadata: { ...raw },
       })
       .select('id')
       .single()
