@@ -1,6 +1,7 @@
 import FundHero from '@/components/fund/FundHero';
 import NebulaDivider from '@/components/dividers/NebulaDivider';
 import WorkTeaser from '@/components/fund/WorkTeaser';
+import FeaturedCampaign from '@/components/fund/FeaturedCampaign';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,23 +14,19 @@ export default function FundHome() {
       <NebulaDivider label="featured" />
 
       {/* 2) Featured LIFE campaign */}
-      <section className="section" id="featured">
-        <div className="container">
-          <div className="center">
-            <p className="eyebrow">Featured campaign</p>
-            <h2 className="display-title hemp-underline-aurora">Hemp’in Launch</h2>
-          </div>
-
-          <article className="hemp-panel" style={{ marginTop: 16, padding: 16 }}>
-            <p className="muted" style={{ maxWidth: 760, margin: '0 auto' }}>
-              Support the public launch of Hemp’in: modules, infra, and community onboarding.
-            </p>
-            <div className="center" style={{ marginTop: 12 }}>
-              <a href="/campaigns/hempin-launch" className="btn primary thruster">Visit campaign</a>
-            </div>
-          </article>
-        </div>
-      </section>
+      <FeaturedCampaign
+        eyebrow="Featured campaign"
+        title="Hemp’in Launch"
+        blurb="Support the public launch of Hemp’in: modules, infra, and community onboarding."
+        href="/campaigns/hempin-launch"
+        cta="Visit campaign"
+        image={{ src: '/images/featured/hempin-launch.jpg', alt: 'Hemp’in Launch artwork' }}  // adjust path
+        status="live"                     // 'upcoming' | 'live' | 'closed'
+        meta={['30-day window', 'Early Backer multipass']}
+        raised={23400}                    // optional
+        goal={50000}                      // optional
+        currency="USD"
+      />
 
       <NebulaDivider label="upcoming" />
 
@@ -37,8 +34,8 @@ export default function FundHome() {
       <section className="section" id="upcoming">
         <div className="container">
           <div className="center">
-            <p className="eyebrow">Upcoming</p>
-            <h2 className="display-title hemp-underline-aurora">Next in the fund nebula</h2>
+            <p className="eyebrow">All campaigns</p>
+            <h2 className="display-title hemp-underline-aurora">Upcoming campaigns</h2>
             <p className="lede" style={{ marginTop: 10 }}>
               Sneak peek at what’s docking soon. Follow along — we’ll open these as they’re ready.
             </p>
@@ -101,27 +98,24 @@ export default function FundHome() {
               </a>
 
               {/* WORK — visually distinct (pink gradient card) */}
-              <a href="/work"
-                 className="card planet"
-                 style={{
-                   background: 'linear-gradient(180deg, rgba(236,72,153,.18), rgba(236,72,153,.06))',
-                   borderColor: 'rgba(236,72,153,.35)'
-                 }}>
-                <div className="planet-summary">
-                  <span className="planet-title">WORK — Host your campaign</span>
-                  <span className="chevron">↗</span>
-                </div>
-                <div className="planet-content" style={{ maxHeight: 'none', opacity: 1 }}>
-                  <p className="muted" style={{ margin: 0 }}>
-                    Professionals can apply to raise on Hemp’in. We’ll review interest to unlock creator tools.
-                  </p>
-                  <div className="pipeline" style={{ marginTop: 10 }}>
-                    <span className="pill">Visible now</span>
-                    <span className="pill">Creator tools in queue</span>
-                    <span className="pill">Submit interest</span>
-                  </div>
-                </div>
-              </a>
+              {/* WORK — Add your campaign (big +) */}
+{/* WORK — Add your campaign (big + card) */}
+<a
+  href="#work"
+  className="card planet work-add-card"
+  style={{
+    background: 'linear-gradient(180deg, rgba(236,72,153,.22), rgba(236,72,153,.08))',
+    borderColor: 'rgba(236,72,153,.35)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textDecoration: 'none'
+  }}
+>
+  <span className="big-plus">+</span>
+  <span className="caption">Add your campaign</span>
+</a>
             </div>
           </div>
         </div>
@@ -129,8 +123,10 @@ export default function FundHome() {
 
       <NebulaDivider label="pros" compact />
 
-      {/* 4) For Hemp Professionals (keep, but no “live example” button) */}
-      <WorkTeaser />
+{/* 4) For Hemp Professionals */}
+<section id="work">
+  <WorkTeaser />
+</section>
 
       {/* Footer (unchanged) */}
       <footer className="site-footer">

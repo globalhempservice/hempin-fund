@@ -325,19 +325,76 @@ main{flex:1 0 auto}
   to   { transform: translateX(-1.8%); }
 }
 
-/* Section rhythm so dividers don't feel “stacked” */
-.section { padding: 84px 0; }
-.hero    { padding-bottom: 96px; }
+/* Make sure the hero always sits above whatever comes next */
+.hero{
+  position: relative;     /* already there, keep it */
+  z-index: 1;             /* <-- add this */
+  overflow: visible;      /* <-- switch from hidden so inner content isn't clipped */
+  padding: clamp(112px, 14vh, 160px) 0 clamp(112px, 14vh, 160px); /* a bit more breathing room */
+}
 
-/* Optional: nudge the divider toward FUND pink without changing TS:
-   a faint rose glow behind each divider */
-.nebula-wrap::before{
-  content:"";
-  position:absolute;
-  inset:-22px -6% auto -6%;
-  height: 120px;
-  background: radial-gradient(420px 160px at 82% 36%, rgba(236,72,153,.18), transparent 70%);
-  filter: blur(28px);
-  pointer-events:none;
-  z-index: -1;
+/* Full-bleed NebulaDivider, but under content and non-interactive */
+.nebula-wrap{
+  position: relative;
+  margin: 44px 0 28px;
+  z-index: 0;             /* <-- sits under the hero */
+  pointer-events: none;   /* it’s decorative */
+}
+
+/* let the divider go edge-to-edge without overlapping the hero */
+@media (min-width: 640px){
+  .nebula-wrap{
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+}
+
+.nebula-svg{
+  display: block;
+  width: 100vw;
+  height: auto;
+}
+
+.nebula-svg.is-animated{
+  animation: nebula-drift var(--nebula-dur, 12s) linear infinite;
+  will-change: transform;
+}
+
+@keyframes nebula-drift{
+  from { transform: translateX(0); }
+  to   { transform: translateX(-1.8%); }
+}
+
+/* spacing rhythm for sections, so nothing feels stacked */
+.section{ padding: 96px 0; }
+
+
+/* Big + card */
+.work-add-card {
+  min-height: 200px; /* matches other cards */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.work-add-card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 28px rgba(236,72,153,.35);
+}
+
+.work-add-card .big-plus {
+  font-size: 4rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 0 18px rgba(236,72,153,.55);
+  line-height: 1;
+}
+
+.work-add-card .caption {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+}
+
+html {
+  scroll-behavior: smooth;
 }
