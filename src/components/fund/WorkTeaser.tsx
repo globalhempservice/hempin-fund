@@ -61,13 +61,7 @@ export default function WorkTeaser() {
         >
           I’m interested — notify me
         </a>
-        <a
-          className="btn ghost"
-          href="/campaigns/hempin-launch"
-          style={{ textAlign: 'center' }}
-        >
-          See a live example
-        </a>
+        
       </div>
 
       <p className="muted" style={{ marginTop: 10, textAlign: 'center', fontSize: '.92rem' }}>
