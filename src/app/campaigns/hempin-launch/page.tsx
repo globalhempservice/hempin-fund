@@ -40,20 +40,23 @@ export default async function LaunchCampaignPage() {
 
   const campaignId = camp?.id ?? null;
 
-  // Sum captured pledges
-  let raisedUsd = 0;
-  let backers = 0;
+  // metrics
+let raisedUsd = 0;
+let backers  = 0;
 
-  if (campaignId) {
-    const { data: rows = [] } = await supa
-      .from('pledges')
-      .select('amount')
-      .eq('campaign_id', campaignId)
-      .eq('status', 'captured');
+const { data: rows = [], error: pledgesErr } = await supa
+  .from('pledges')
+  .select('amount')
+  .eq('campaign_id', camp.id)
+  .eq('status', 'captured');
 
-    raisedUsd = rows.reduce((s: number, r: any) => s + (Number(r.amount) || 0), 0);
-    backers = rows.length;
-  }
+// rows is always an array now
+if (!pledgesErr && rows.length) {
+  raisedUsd = rows.reduce((sum, r: { amount: number | string | null }) => {
+    return sum + (Number(r?.amount ?? 0) || 0);
+  }, 0);
+  backers = rows.length;
+}
 
   const pct = Math.min(100, Math.round((raisedUsd / GOAL_USD) * 100));
 
