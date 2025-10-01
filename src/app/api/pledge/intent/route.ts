@@ -1,12 +1,12 @@
 // src/app/api/pledge/intent/route.ts
 import { NextResponse } from 'next/server'
-import { getServerClient } from '@/lib/supabase/server'   // uses @supabase/ssr + cookies
-import { createAdminClient } from '@/lib/supabase/admin'  // service role for DB writes
+import { getServerClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { campaign, tier, label, currency = 'USD', amount, returnTo } = body ?? {}
+    const { campaign, amount } = body ?? {}
 
     if (!campaign || !amount) {
       return NextResponse.json({ ok:false, error:'Missing fields' }, { status: 400 })
@@ -19,25 +19,26 @@ export async function POST(req: Request) {
 
     const db = createAdminClient()
 
-    // optional: look up campaign id from slug
+    // look up campaign id from slug
     const { data: camp, error: cErr } = await db
       .from('campaigns')
-      .select('id, slug').eq('slug', campaign).single()
-    if (cErr || !camp) return NextResponse.json({ ok:false, error:'Campaign not found' }, { status: 404 })
+      .select('id, slug')
+      .eq('slug', campaign)
+      .single()
 
-    // create a pledge row we can update on capture
+    if (cErr || !camp) {
+      return NextResponse.json({ ok:false, error:'Campaign not found' }, { status: 404 })
+    }
+
+    // create a pledge “intent” row (only columns that exist today)
     const { data: row, error } = await db
       .from('pledges')
       .insert({
         campaign_id: camp.id,
-        user_id: user.id,           // <-- critical for RLS
-        email: user.email,          // good to keep too
-        tier_key: tier ?? null,
-        label: label ?? null,
-        currency,
-        amount,
-        status: 'intent',           // pending
-        metadata: { returnTo }
+        user_id: user.id,
+        email: user.email,
+        amount,          // store intended amount now; it will be the same at capture
+        // tier_id: null  // keep null for now unless you resolve it elsewhere
       })
       .select('id')
       .single()
