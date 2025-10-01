@@ -1,5 +1,5 @@
 import FundHero from '@/components/fund/FundHero';
-import NebulalDivider from '@/components/dividers/NebulaDivider';
+import NebulaDivider from '@/components/dividers/NebulaDivider';
 import WorkTeaser from '@/components/fund/WorkTeaser';
 
 export const dynamic = 'force-dynamic';
