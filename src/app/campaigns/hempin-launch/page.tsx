@@ -34,20 +34,23 @@ const TIERS: Tier[] = [
 export default async function LaunchCampaignPage() {
   const supa = createServerClientReadOnly();
 
-  // Strongly type the RPC and guard the value for TS
-  const { data: totalsRaw, error } = await supa
-    .rpc<CampaignTotals, { slug: string }>('campaign_totals', { slug: 'hempin-launch' })
-    .single();
-
-  if (error) console.error('campaign_totals RPC failed', error);
-
-  const totals  = (totalsRaw ?? null) as CampaignTotals | null;
-  const goal    = Number(totals?.goal ?? 20000);
-  const raised  = Number(totals?.raised ?? 0);
-  const backers = Number(totals?.backers ?? 0);
-  const pct     = Math.min(100, Math.round((raised / goal) * 100));
-
-  return (
+  export default async function LaunchCampaignPage() {
+    const supa = createServerClientReadOnly();
+  
+    // Call RPC without generics; cast after .single() to dodge TS generic mismatch across envs
+    const { data: totalsRaw, error } = await supa
+      .rpc('campaign_totals', { slug: 'hempin-launch' })
+      .single();
+  
+    if (error) console.error('campaign_totals RPC failed', error);
+  
+    const totals  = (totalsRaw as CampaignTotals | null) ?? null;
+    const goal    = Number(totals?.goal ?? 20000);
+    const raised  = Number(totals?.raised ?? 0);
+    const backers = Number(totals?.backers ?? 0);
+    const pct     = Math.min(100, Math.round((raised / goal) * 100));
+  
+    return (
     <main className="min-h-screen app-shell">
       {/* Stars */}
       <div className="starfield-root" aria-hidden>
