@@ -36,15 +36,12 @@ export default async function LaunchCampaignPage() {
 
   // Strongly type the RPC and guard the value for TS
   const { data: totalsRaw, error } = await supa
-    .rpc<CampaignTotals>('campaign_totals', { slug: 'hempin-launch' })
+    .rpc<CampaignTotals, { slug: string }>('campaign_totals', { slug: 'hempin-launch' })
     .single();
 
-  if (error) {
-    console.error('campaign_totals RPC failed', error);
-  }
+  if (error) console.error('campaign_totals RPC failed', error);
 
-  const totals = (totalsRaw ?? null) as CampaignTotals | null;
-
+  const totals  = (totalsRaw ?? null) as CampaignTotals | null;
   const goal    = Number(totals?.goal ?? 20000);
   const raised  = Number(totals?.raised ?? 0);
   const backers = Number(totals?.backers ?? 0);
