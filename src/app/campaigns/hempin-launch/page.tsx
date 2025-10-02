@@ -31,8 +31,6 @@ const TIERS: Tier[] = [
   { id: 'cosmos', label: 'Cosmos', amount: 10000, adds: 'Lifetime multipass + priority windows' },
 ];
 
-export default async function LaunchCampaignPage() {
-  const supa = createServerClientReadOnly();
 
   export default async function LaunchCampaignPage() {
     const supa = createServerClientReadOnly();
