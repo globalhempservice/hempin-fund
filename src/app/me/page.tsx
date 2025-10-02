@@ -1,6 +1,5 @@
 // src/app/me/page.tsx
-import { cookies } from 'next/headers';
-import { createServerClient } from '@/lib/supabase/server';
+
 
 type PledgeRow = {
   id: string;
@@ -13,7 +12,7 @@ type PledgeRow = {
 };
 
 export default async function MePage() {
-  const supa = createServerClient(cookies());
+  const supa = createServerClient();
   const { data: { user } } = await supa.auth.getUser();
 
   if (!user) {
