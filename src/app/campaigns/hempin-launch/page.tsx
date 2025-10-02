@@ -28,41 +28,21 @@ const TIERS: Tier[] = [
 export default async function LaunchCampaignPage() {
   const supa = createServerClientReadOnly();
 
-  // 1) Campaign
-  const { data: camp, error: campErr } = await supa
-    .from('campaigns')
-    .select('id, title, target_amount')
-    .eq('slug', 'hempin-launch')
-    .single();
+ // grab totals (bypasses RLS only inside the RPC)
+ const { data: totals, error } = await supa
+ .rpc('campaign_totals', { slug: 'hempin-launch' })
+ .single();
 
-  if (campErr) {
-    console.error('Campaign fetch failed:', campErr);
-  }
+if (error) {
+ console.error('campaign_totals RPC failed', error);
+}
 
-  const goalUsd = Number(camp?.target_amount ?? 20000);
+const goal      = Number(totals?.goal ?? 20000);
+const raised    = Number(totals?.raised ?? 0);
+const backers   = Number(totals?.backers ?? 0);
+const pct       = Math.min(100, Math.round((raised / goal) * 100));
 
-  // 2) Pledges — always coerce to array before using
-  let raisedUsd = 0;
-  let backers = 0;
-
-  if (camp?.id) {
-    const { data: dataMaybe, error: pledgesErr } = await supa
-      .from('pledges')
-      .select('amount')
-      .eq('campaign_id', camp.id)
-      .eq('status', 'captured');
-
-    const rows = Array.isArray(dataMaybe) ? dataMaybe : [];
-
-    if (!pledgesErr && rows.length > 0) {
-      raisedUsd = rows.reduce((sum, r) => sum + Number(r?.amount ?? 0), 0);
-      backers = rows.length;
-    }
-  }
-
-  const pct = Math.min(100, Math.round((raisedUsd / (goalUsd || 1)) * 100));
-
-  return (
+return (
     <main className="min-h-screen app-shell">
       {/* Stars */}
       <div className="starfield-root" aria-hidden>
