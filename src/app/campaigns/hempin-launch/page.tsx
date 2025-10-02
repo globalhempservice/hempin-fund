@@ -28,37 +28,41 @@ const TIERS: Tier[] = [
 const GOAL_USD = 20000;
 
 export default async function LaunchCampaignPage() {
-  // ---- Real totals from Supabase ----
   const supa = createServerClient();
 
-  // Campaign by slug
-  const { data: camp } = await supa
+  // 1) Campaign (use .single() so TS knows it’s not nullable if found)
+  const { data: camp, error: campErr } = await supa
     .from('campaigns')
-    .select('id, slug, title')
+    .select('id, title, target_amount')
     .eq('slug', 'hempin-launch')
     .single();
 
-  const campaignId = camp?.id ?? null;
+  // If not found, render with safe defaults (prevents build crash)
+  if (campErr) {
+    console.error('campaign fetch failed', campErr);
+  }
 
-  // metrics
-let raisedUsd = 0;
-let backers  = 0;
+  const GOAL_USD = Number(camp?.target_amount ?? 20000);
 
-const { data: rows = [], error: pledgesErr } = await supa
-  .from('pledges')
-  .select('amount')
-  .eq('campaign_id', camp.id)
-  .eq('status', 'captured');
+  // 2) Pledges (guard against null + default to [])
+  let raisedUsd = 0;
+  let backers = 0;
 
-// rows is always an array now
-if (!pledgesErr && rows.length) {
-  raisedUsd = rows.reduce((sum, r: { amount: number | string | null }) => {
-    return sum + (Number(r?.amount ?? 0) || 0);
-  }, 0);
-  backers = rows.length;
-}
+  if (camp?.id) {
+    const { data: rows = [], error: pledgesErr } = await supa
+      .from('pledges')
+      .select('amount')
+      .eq('campaign_id', camp.id)
+      .eq('status', 'captured');
+
+    if (!pledgesErr && rows.length) {
+      raisedUsd = rows.reduce((sum, r) => sum + Number(r?.amount ?? 0), 0);
+      backers = rows.length;
+    }
+  }
 
   const pct = Math.min(100, Math.round((raisedUsd / GOAL_USD) * 100));
+
 
   return (
     <main className="min-h-screen app-shell">
