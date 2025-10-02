@@ -5,6 +5,13 @@ import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import TierSlider from '@/components/fund/TierSlider';
 import { createServerClientReadOnly } from '@/lib/supabase/server';
 
+type CampaignTotals = {
+  campaign_id: string;
+  raised: number | null;
+  backers: number | null;
+  goal: number | null;
+};
+
 export const metadata: Metadata = {
   title: "Hemp’in Launch — Fund the navigator",
   description:
