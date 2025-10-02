@@ -1,7 +1,10 @@
+// src/app/page.tsx or src/app/fund/page.tsx (wherever FundHome lives)
 import FundHero from '@/components/fund/FundHero';
 import NebulaDivider from '@/components/dividers/NebulaDivider';
 import WorkTeaser from '@/components/fund/WorkTeaser';
-import FeaturedCampaign from '@/components/fund/FeaturedCampaign';
+// ⬇ swap this
+// import FeaturedCampaign from '@/components/fund/FeaturedCampaign';
+import FeaturedCampaignLive from '@/components/fund/FeaturedCampaignLive';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,24 +16,22 @@ export default function FundHome() {
 
       <NebulaDivider label="featured" />
 
-      {/* 2) Featured LIFE campaign */}
-      <FeaturedCampaign
+      {/* 2) Featured LIFE campaign — now live numbers */}
+      <FeaturedCampaignLive
+        slug="hempin-launch"
         eyebrow="Featured campaign"
-        title="Hemp’in Launch"
         blurb="Support the public launch of Hemp’in: modules, infra, and community onboarding."
         href="/campaigns/hempin-launch"
         cta="Visit campaign"
-        image={{ src: '/images/featured/hempin-launch.jpg', alt: 'Hemp’in Launch artwork' }}  // adjust path
-        status="live"                     // 'upcoming' | 'live' | 'closed'
+        image={{ src: '/images/featured/hempin-launch.jpg', alt: 'Hemp’in Launch artwork' }}
+        status="live"
         meta={['30-day flash raise', 'Early Backer badges', 'Multipass Card']}
-        raised={220}                    // optional
-        goal={20000}                      // optional
         currency="USD"
       />
 
       <NebulaDivider label="upcoming" />
 
-      {/* 3) Upcoming (with pink aura + special WORK tile) */}
+      {/* 3) Upcoming campaigns */}
       <section className="section" id="upcoming">
         <div className="container">
           <div className="center">
@@ -97,25 +98,23 @@ export default function FundHome() {
                 </div>
               </a>
 
-              {/* WORK — visually distinct (pink gradient card) */}
-              {/* WORK — Add your campaign (big +) */}
-{/* WORK — Add your campaign (big + card) */}
-<a
-  href="#work"
-  className="card planet work-add-card"
-  style={{
-    background: 'linear-gradient(180deg, rgba(236,72,153,.22), rgba(236,72,153,.08))',
-    borderColor: 'rgba(236,72,153,.35)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textDecoration: 'none'
-  }}
->
-  <span className="big-plus">+</span>
-  <span className="caption">Add your campaign</span>
-</a>
+              {/* WORK — Add your campaign */}
+              <a
+                href="#work"
+                className="card planet work-add-card"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(236,72,153,.22), rgba(236,72,153,.08))',
+                  borderColor: 'rgba(236,72,153,.35)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textDecoration: 'none'
+                }}
+              >
+                <span className="big-plus">+</span>
+                <span className="caption">Add your campaign</span>
+              </a>
             </div>
           </div>
         </div>
@@ -123,12 +122,12 @@ export default function FundHome() {
 
       <NebulaDivider label="pros" compact />
 
-{/* 4) For Hemp Professionals */}
-<section id="work">
-  <WorkTeaser />
-</section>
+      {/* 4) For Hemp Professionals */}
+      <section id="work">
+        <WorkTeaser />
+      </section>
 
-      {/* Footer (unchanged) */}
+      {/* Footer */}
       <footer className="site-footer">
         <div className="container row">
           <span className="muted tiny">© {new Date().getFullYear()} Hemp’in</span>
