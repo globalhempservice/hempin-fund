@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import TierSlider from '@/components/fund/TierSlider';
-import { createServerClientReadOnly } from '@/lib/supabase/server';
+import { createServerClientSupabase as createServerClientReadOnly } from '@/lib/supabase/server';
 
 type CampaignTotals = {
   campaign_id: string;
