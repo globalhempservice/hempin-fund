@@ -27,7 +27,7 @@ export default function WorkTeaser() {
         >
           <p className="muted" style={{ margin: '0 auto', maxWidth: 760, textAlign: 'center' }}>
             Raise funds for cultivation, processing lines, R&amp;D, or community builds. Hemp’in provides the tools
-            to easilly build a pagepage, progress tracking, and efficient checkout.
+            to easilly build a page, progress tracking, and super efficient checkout.
           </p>
 
           <ul
