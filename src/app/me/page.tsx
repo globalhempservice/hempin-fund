@@ -30,27 +30,32 @@ export default async function MePage() {
   }
 
   // 1) get pledges for this user
-  const { data: pledges = [] } = await supa
-    .from('pledges')
-    .select('id,campaign_id,tier_id,amount,currency,status,created_at')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false }) as { data: PledgeRow[] | null };
+const pledgesRes = await supa
+.from('pledges')
+.select('id,campaign_id,tier_id,amount,currency,status,created_at')
+.eq('user_id', user.id)
+.order('created_at', { ascending: false });
 
-  // 2) fetch related titles in one go
-  const campaignIds = [...new Set(pledges.map(p => p.campaign_id).filter(Boolean))] as string[];
-  const tierIds     = [...new Set(pledges.map(p => p.tier_id).filter(Boolean))] as string[];
+const pledges: PledgeRow[] = pledgesRes.data ?? []; // <-- force array
 
-  const [{ data: campaigns = [] }, { data: tiers = [] }] = await Promise.all([
-    campaignIds.length
-      ? supa.from('campaigns').select('id, title, slug').in('id', campaignIds)
-      : Promise.resolve({ data: [] as any }),
-    tierIds.length
-      ? supa.from('tiers').select('id, title').in('id', tierIds)
-      : Promise.resolve({ data: [] as any }),
-  ]);
+// 2) fetch related titles in one go
+const campaignIds = [...new Set(pledges.map(p => p.campaign_id).filter(Boolean))] as string[];
+const tierIds     = [...new Set(pledges.map(p => p.tier_id).filter(Boolean))] as string[];
 
-  const campById = new Map(campaigns.map((c:any) => [c.id, c]));
-  const tierById = new Map(tiers.map((t:any) => [t.id, t]));
+const [campaignsRes, tiersRes] = await Promise.all([
+campaignIds.length
+  ? supa.from('campaigns').select('id, title, slug').in('id', campaignIds)
+  : Promise.resolve({ data: [] as any[] }),
+tierIds.length
+  ? supa.from('tiers').select('id, title').in('id', tierIds)
+  : Promise.resolve({ data: [] as any[] }),
+]);
+
+const campaigns = campaignsRes?.data ?? [];
+const tiers     = tiersRes?.data ?? [];
+
+const campById = new Map(campaigns.map((c: any) => [c.id, c]));
+const tierById = new Map(tiers.map((t: any) => [t.id, t]));
 
   return (
     <main className="container" style={{ maxWidth: 920, margin: '0 auto', padding: '18px 12px 28px' }}>
