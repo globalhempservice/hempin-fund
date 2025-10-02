@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import TierSlider from '@/components/fund/TierSlider';
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerClientReadOnly } from '@/lib/supabase/server';
 
 export const metadata: Metadata = {
   title: "Hemp’in Launch — Fund the navigator",
@@ -26,7 +26,7 @@ const TIERS: Tier[] = [
 ];
 
 export default async function LaunchCampaignPage() {
-  const supa = createServerClient();
+  const supa = createServerClientReadOnly();
 
   // 1) Campaign
   const { data: camp, error: campErr } = await supa
