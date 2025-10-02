@@ -1,3 +1,4 @@
+// src/lib/supabase/server.ts
 import { cookies } from 'next/headers';
 import {
   createServerClient as createSsrClient,
@@ -23,7 +24,6 @@ function withDefaults(opts?: Partial<CookieOptions>): CookieOptions {
     return {
       path: '/',
       httpOnly: true,
-      // leave sameSite/secure undefined so browsers accept on http://localhost
       ...(opts || {}),
     };
   }
@@ -39,7 +39,11 @@ function withDefaults(opts?: Partial<CookieOptions>): CookieOptions {
   };
 }
 
-export function createServerClientSupabase() {
+/**
+ * Read/Write client — can SET/REMOVE cookies.
+ * ✅ Use ONLY in Route Handlers or Server Actions.
+ */
+export function createServerClient() {
   const store = cookies();
   return createSsrClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     cookies: {
@@ -60,5 +64,21 @@ export function createServerClientSupabase() {
   });
 }
 
-// Back-compat alias (optional)
-export const createServerClient = createServerClientSupabase;
+/**
+ * Read-only client — NO cookie writes.
+ * ✅ Use in Server Components (pages/layouts) to avoid the “Cookies can only be modified…” crash.
+ */
+export function createServerClientReadOnly() {
+  const store = cookies();
+  return createSsrClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: {
+      get(name) {
+        return store.get(name)?.value;
+      },
+      // No set/remove here on purpose.
+    },
+  });
+}
+
+// (Optional) back-compat alias if other files imported the old name:
+export const createServerClientSupabase = createServerClient;
