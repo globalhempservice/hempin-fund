@@ -64,14 +64,7 @@ export default function FundHero() {
             </button>
           </form>
 
-          <a
-            className="btn ghost"
-            href="https://hempin.org"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Learn about Hempin.org
-          </a>
+          
         </div>
 
         {/* tiny success/error */}

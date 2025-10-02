@@ -2,9 +2,9 @@
 import FundHero from '@/components/fund/FundHero';
 import NebulaDivider from '@/components/dividers/NebulaDivider';
 import WorkTeaser from '@/components/fund/WorkTeaser';
-// ⬇ swap this
-// import FeaturedCampaign from '@/components/fund/FeaturedCampaign';
-import FeaturedCampaignLive from '@/components/fund/FeaturedCampaignLive';
+
+
+import FeaturedCampaign from '@/components/fund/FeaturedCampaign';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,17 +17,17 @@ export default function FundHome() {
       <NebulaDivider label="featured" />
 
       {/* 2) Featured LIFE campaign — now live numbers */}
-      <FeaturedCampaignLive
-        slug="hempin-launch"
-        eyebrow="Featured campaign"
-        blurb="Support the public launch of Hemp’in: modules, infra, and community onboarding."
-        href="/campaigns/hempin-launch"
-        cta="Visit campaign"
-        image={{ src: '/images/featured/hempin-launch.jpg', alt: 'Hemp’in Launch artwork' }}
-        status="live"
-        meta={['30-day flash raise', 'Early Backer badges', 'Multipass Card']}
-        currency="USD"
-      />
+      <FeaturedCampaign
+  slug="hempin-launch"
+  eyebrow="Featured campaign"
+  title="Hemp’in Launch"
+  blurb="Support the public launch of Hemp’in: modules, infra, and community onboarding."
+  href="/campaigns/hempin-launch"
+  cta="Visit campaign"
+  status="live"
+  image={{ src: '/images/launch-banner.jpg', alt: 'Hemp’in Launch banner' }}
+  meta={['Oct 1 → Oct 31']}
+/>
 
       <NebulaDivider label="upcoming" />
 
