@@ -25,44 +25,42 @@ const TIERS: Tier[] = [
   { id: 'cosmos', label: 'Cosmos', amount: 10000, adds: 'Lifetime multipass + priority windows' },
 ];
 
-const GOAL_USD = 20000;
-
 export default async function LaunchCampaignPage() {
   const supa = createServerClient();
 
-  // 1) Campaign (use .single() so TS knows it’s not nullable if found)
+  // 1) Campaign
   const { data: camp, error: campErr } = await supa
     .from('campaigns')
     .select('id, title, target_amount')
     .eq('slug', 'hempin-launch')
     .single();
 
-  // If not found, render with safe defaults (prevents build crash)
   if (campErr) {
-    console.error('campaign fetch failed', campErr);
+    console.error('Campaign fetch failed:', campErr);
   }
 
-  const GOAL_USD = Number(camp?.target_amount ?? 20000);
+  const goalUsd = Number(camp?.target_amount ?? 20000);
 
-  // 2) Pledges (guard against null + default to [])
+  // 2) Pledges — always coerce to array before using
   let raisedUsd = 0;
   let backers = 0;
 
   if (camp?.id) {
-    const { data: rows = [], error: pledgesErr } = await supa
+    const { data: dataMaybe, error: pledgesErr } = await supa
       .from('pledges')
       .select('amount')
       .eq('campaign_id', camp.id)
       .eq('status', 'captured');
 
-    if (!pledgesErr && rows.length) {
+    const rows = Array.isArray(dataMaybe) ? dataMaybe : [];
+
+    if (!pledgesErr && rows.length > 0) {
       raisedUsd = rows.reduce((sum, r) => sum + Number(r?.amount ?? 0), 0);
       backers = rows.length;
     }
   }
 
-  const pct = Math.min(100, Math.round((raisedUsd / GOAL_USD) * 100));
-
+  const pct = Math.min(100, Math.round((raisedUsd / (goalUsd || 1)) * 100));
 
   return (
     <main className="min-h-screen app-shell">
@@ -110,7 +108,7 @@ export default async function LaunchCampaignPage() {
                   ${format(raisedUsd)} raised
                 </strong>
                 <span className="muted" style={{ fontSize: '.95rem' }}>
-                  Goal: ${format(GOAL_USD)}
+                  Goal: ${format(goalUsd)}
                 </span>
               </div>
               <div
