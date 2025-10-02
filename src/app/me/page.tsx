@@ -1,5 +1,5 @@
 // src/app/me/page.tsx
-
+import { createServerClient } from '@/lib/supabase/server';
 
 type PledgeRow = {
   id: string;
