@@ -11,11 +11,7 @@ export const dynamic = 'force-dynamic';
 export default function FundHome() {
   return (
     <>
-      {/* 1) What is Hemp’in Fund? */}
-      <FundHero />
-
-      <NebulaDivider label="featured" />
-
+      
       {/* 2) Featured LIFE campaign — now live numbers */}
       <FeaturedCampaign
   slug="hempin-launch"
@@ -28,6 +24,13 @@ export default function FundHome() {
   image={{ src: '/images/hempin-launch.jpg', alt: 'Hemp’in Launch banner' }}
   meta={['Oct 1 → Oct 31']}
 />
+      
+
+      <NebulaDivider label="featured" />
+
+      
+      {/* 1) What is Hemp’in Fund? */}
+      <FundHero />
 
       <NebulaDivider label="upcoming" />
 

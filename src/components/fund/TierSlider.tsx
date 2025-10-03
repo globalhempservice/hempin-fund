@@ -76,7 +76,7 @@ export default function TierSlider({
       {/* header */}
       <div className="center">
         <div className="eyebrow" style={{ letterSpacing: '.12em' }}>
-          CHOOSE YOUR SUPPORT
+          LEVEL
         </div>
         <div style={{ marginTop: 6 }}>
           <div

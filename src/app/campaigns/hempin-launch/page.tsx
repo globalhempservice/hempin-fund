@@ -118,7 +118,7 @@ const TIERS: Tier[] = [
         {/* Tiers — slider selector */}
         <div id="tiers" style={{ marginTop: 16 }}>
           <h2 className="display-title" style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}>
-            Choose a tier
+            It's your turn to shine
           </h2>
           <div className="cta-scanline" aria-hidden />
           <TierSlider campaignSlug="hempin-launch" tiers={TIERS} />
