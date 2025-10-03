@@ -1,33 +1,41 @@
 // src/components/fund/FundHero.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import EmailCTA from '@/components/EmailCTA';
+
+type Mode = 'LIFE' | 'WORK';
 
 export default function FundHero() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle'|'ok'|'err'|'loading'>('idle');
+  const [mode, setMode] = useState<Mode>('LIFE');
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!email) return;
-    try {
-      setStatus('loading');
-      // simple POST to our fund API (we can swap to Supabase directly later)
-      const res = await fetch('/api/lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          role: 'LIFE',
-          source: 'fund.hempin.org#herocta',
-        }),
-      });
-      const j = await res.json();
-      setStatus(res.ok && j?.ok ? 'ok' : 'err');
-    } catch {
-      setStatus('err');
+  // keyboard shortcuts ← / → to switch mode (optional, nice touch)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') setMode('LIFE');
+      if (e.key === 'ArrowRight') setMode('WORK');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const CARDS = useMemo(() => {
+    if (mode === 'LIFE') {
+      return [
+        'Back Hemp’in software modules',
+        'Invest in regenerative farms',
+        'Group-fund a fashion capsule',
+        'Reserve regional hempcrete drops',
+      ];
     }
-  }
+    // WORK
+    return [
+      'Run your crowdfunding campaign',
+      'Own a custom funding page',
+      'Finance your next season',
+      'Show milestones & receipts (WETAS)',
+    ];
+  }, [mode]);
 
   return (
     <section className="hero">
@@ -35,53 +43,121 @@ export default function FundHero() {
         <p className="eyebrow" style={{ letterSpacing: '0.22em' }}>What is Hemp’in Fund?</p>
         <h1 className="display-title hemp-underline-aurora">Crowdfunding for the hemp universe</h1>
 
+        {/* Platform-focused intro */}
         <p className="lede" style={{ marginTop: 12 }}>
-          Back fashion capsules, regenerative farms, R&amp;D, and open software. One nebula for
-          creators and communities to fund what moves hemp forward.
+          Hemp’in Fund is the launchpad where the hemp ecosystem gets funded. From farms and labs to
+          design studios and open tools—anyone can run a campaign here. Every pledge strengthens a
+          living network where hemp knowledge, products, and culture thrive.
         </p>
 
-        {/* CTA row */}
-        <div className="cta-row" style={{ marginTop: 16, justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
-          {/* email capture */}
-          <form onSubmit={onSubmit} className="inline-flex gap-2" style={{ alignItems: 'center' }}>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="input"
-              style={{
-                padding: '10px 12px',
-                borderRadius: 10,
-                border: '1px solid rgba(255,255,255,.14)',
-                background: 'rgba(255,255,255,.04)',
-                minWidth: 220,
-              }}
-            />
-            <button type="submit" className="btn primary thruster" disabled={status === 'loading'}>
-              {status === 'loading' ? 'Sending…' : 'Get campaign updates'}
-            </button>
-          </form>
+        {/* LIFE / WORK toggle */}
+        <div className="mode-toggle" role="tablist" aria-label="Choose audience">
+          <button
+            role="tab"
+            aria-selected={mode === 'LIFE'}
+            className={`mode-pill ${mode === 'LIFE' ? 'is-active' : ''}`}
+            onClick={() => setMode('LIFE')}
+          >
+            LIFE
+          </button>
+          <button
+            role="tab"
+            aria-selected={mode === 'WORK'}
+            className={`mode-pill ${mode === 'WORK' ? 'is-active' : ''}`}
+            onClick={() => setMode('WORK')}
+          >
+            WORK
+          </button>
 
-          
+          {/* sliding visor */}
+          <span className={`mode-indicator ${mode.toLowerCase()}`} aria-hidden />
         </div>
 
-        {/* tiny success/error */}
-        {status === 'ok' && (
-          <div className="muted" style={{ marginTop: 8, opacity: .9 }}>
-            Thanks! We’ll keep you posted.
+        {/* Mini cards */}
+        <div className="cards-grid" aria-live="polite">
+          {CARDS.map((label) => (
+            <div key={label} className="mini-card hemp-panel">
+              <div className="mini-title">{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA row (stacked; EmailCTA at the bottom) */}
+        <div className="cta-row" style={{ marginTop: 16, justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <div className="inline-flex gap-2" style={{ alignItems: 'center' }}>
+            <EmailCTA role="LIFE" source="fund.hempin.org#fundHero" />
           </div>
-        )}
-        {status === 'err' && (
-          <div className="muted" style={{ marginTop: 8, color: '#fecaca' }}>
-            Oops — couldn’t save your email. Try again?
-          </div>
-        )}
+        </div>
       </div>
 
       {/* background glow */}
       <div className="hero-glow" aria-hidden />
+
+      {/* Scoped styles (keep it lightweight) */}
+      <style jsx>{`
+        .mode-toggle{
+          position: relative;
+          display: inline-grid;
+          grid-auto-flow: column;
+          gap: 8px;
+          padding: 6px;
+          margin: 18px auto 10px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.06);
+          border: 1px solid rgba(255,255,255,.10);
+        }
+        .mode-pill{
+          position: relative;
+          z-index: 2;
+          padding: 8px 16px;
+          border-radius: 999px;
+          border: 0;
+          background: transparent;
+          color: inherit;
+          font-weight: 800;
+          letter-spacing: .02em;
+          cursor: pointer;
+        }
+        .mode-pill.is-active{ color: #fff; }
+        .mode-indicator{
+          position: absolute;
+          z-index: 1;
+          top: 6px; bottom: 6px;
+          width: 50%;
+          border-radius: 999px;
+          background: linear-gradient(180deg, rgba(236,72,153,.22), rgba(236,72,153,.10));
+          border: 1px solid rgba(236,72,153,.35);
+          transition: transform .22s ease;
+        }
+        .mode-indicator.life{ transform: translateX(0%); }
+        .mode-indicator.work{ transform: translateX(100%); }
+
+        .cards-grid{
+          display: grid;
+          gap: 10px;
+          margin-top: 12px;
+          grid-template-columns: 1fr;
+        }
+        @media (min-width: 760px){
+          .cards-grid{ grid-template-columns: 1fr 1fr; }
+        }
+        .mini-card{
+          padding: 14px;
+          text-align: left;
+          background: rgba(255,255,255,.05);
+          border-color: rgba(255,255,255,.10);
+          transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+        }
+        .mini-card:hover{
+          transform: translateY(-2px);
+          border-color: rgba(236,72,153,.35);
+          box-shadow: 0 10px 24px rgba(0,0,0,.30), 0 0 16px rgba(236,72,153,.18);
+        }
+        .mini-title{
+          font-weight: 700;
+          letter-spacing: .01em;
+        }
+      `}</style>
     </section>
   );
 }
