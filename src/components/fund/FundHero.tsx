@@ -9,7 +9,6 @@ type Mode = 'LIFE' | 'WORK';
 export default function FundHero() {
   const [mode, setMode] = useState<Mode>('LIFE');
 
-  // keyboard shortcuts ← / → to switch mode (optional, nice touch)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') setMode('LIFE');
@@ -28,7 +27,6 @@ export default function FundHero() {
         'Reserve regional hempcrete drops',
       ];
     }
-    // WORK
     return [
       'Run your crowdfunding campaign',
       'Own a custom funding page',
@@ -43,7 +41,6 @@ export default function FundHero() {
         <p className="eyebrow" style={{ letterSpacing: '0.22em' }}>What is Hemp’in Fund?</p>
         <h1 className="display-title hemp-underline-aurora">Crowdfunding for the hemp universe</h1>
 
-        {/* Platform-focused intro */}
         <p className="lede" style={{ marginTop: 12 }}>
           Hemp’in Fund is the launchpad where the hemp ecosystem gets funded. From farms and labs to
           design studios and open tools—anyone can run a campaign here. Every pledge strengthens a
@@ -82,10 +79,16 @@ export default function FundHero() {
           ))}
         </div>
 
-        {/* CTA row (stacked; EmailCTA at the bottom) */}
-        <div className="cta-row" style={{ marginTop: 16, justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+        {/* small line above CTA */}
+        <p className="muted" style={{ marginTop: 12 }}>
+          Get updates about new features and upcoming campaigns.
+        </p>
+
+        {/* CTA row */}
+        <div className="cta-row" style={{ marginTop: 10, justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
           <div className="inline-flex gap-2" style={{ alignItems: 'center' }}>
-            <EmailCTA role="LIFE" source="fund.hempin.org#fundHero" />
+            {/* Use pink theme for the button */}
+            <EmailCTA role="LIFE" source="fund.hempin.org#fundHero" variant="fund" />
           </div>
         </div>
       </div>
@@ -93,14 +96,15 @@ export default function FundHero() {
       {/* background glow */}
       <div className="hero-glow" aria-hidden />
 
-      {/* Scoped styles (keep it lightweight) */}
+      {/* Scoped styles */}
       <style jsx>{`
+        /* ===== Toggle ===== */
         .mode-toggle{
           position: relative;
           display: inline-grid;
           grid-auto-flow: column;
           gap: 8px;
-          padding: 6px;
+          padding: 6px;                  /* outer padding evenly on both sides */
           margin: 18px auto 10px;
           border-radius: 999px;
           background: rgba(255,255,255,.06);
@@ -109,7 +113,7 @@ export default function FundHero() {
         .mode-pill{
           position: relative;
           z-index: 2;
-          padding: 8px 16px;
+          padding: 8px 16px;             /* inner padding */
           border-radius: 999px;
           border: 0;
           background: transparent;
@@ -123,26 +127,31 @@ export default function FundHero() {
           position: absolute;
           z-index: 1;
           top: 6px; bottom: 6px;
-          width: 50%;
+          left: 6px;                      /* ensures equal side padding */
+          width: calc(50% - 6px);         /* accounts for left padding */
           border-radius: 999px;
           background: linear-gradient(180deg, rgba(236,72,153,.22), rgba(236,72,153,.10));
           border: 1px solid rgba(236,72,153,.35);
           transition: transform .22s ease;
         }
-        .mode-indicator.life{ transform: translateX(0%); }
-        .mode-indicator.work{ transform: translateX(100%); }
+        .mode-indicator.life{ transform: translateX(0); }
+        .mode-indicator.work{ transform: translateX(calc(100% + 6px)); } /* +6px equals right padding */
 
+        /* ===== Cards: 1 → 2 → 4 columns ===== */
         .cards-grid{
           display: grid;
           gap: 10px;
           margin-top: 12px;
           grid-template-columns: 1fr;
         }
-        @media (min-width: 760px){
-          .cards-grid{ grid-template-columns: 1fr 1fr; }
+        @media (min-width: 640px){  /* tablet */
+          .cards-grid{ grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 980px){  /* desktop */
+          .cards-grid{ grid-template-columns: repeat(4, 1fr); }
         }
         .mini-card{
-          padding: 14px;
+          padding: 12px;
           text-align: left;
           background: rgba(255,255,255,.05);
           border-color: rgba(255,255,255,.10);
@@ -153,10 +162,7 @@ export default function FundHero() {
           border-color: rgba(236,72,153,.35);
           box-shadow: 0 10px 24px rgba(0,0,0,.30), 0 0 16px rgba(236,72,153,.18);
         }
-        .mini-title{
-          font-weight: 700;
-          letter-spacing: .01em;
-        }
+        .mini-title{ font-weight: 700; letter-spacing: .01em; }
       `}</style>
     </section>
   );
