@@ -16,10 +16,10 @@ export default function FundHome() {
       <FeaturedCampaign
   slug="hempin-launch"
   eyebrow="Featured campaign"
-  title="Hemp’in Launch"
-  blurb="Support the public launch of Hemp’in: modules, infra, and community onboarding."
+  title="Support Hemp’in and win prizes"
+  blurb="Back Hemp’in and get more than a badge. Expect surprise perks, early access, and community drops — while helping us build the hemp supermarket, recruit global brands, and ship a mobile app for citizens everywhere."
   href="/campaigns/hempin-launch"
-  cta="Visit campaign"
+  cta="Open campaign page"
   status="live"
   image={{ src: '/images/hempin-launch.jpg', alt: 'Hemp’in Launch banner' }}
   meta={['Oct 1 → Oct 31']}
