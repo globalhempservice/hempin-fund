@@ -38,7 +38,7 @@ export const REWARD_IMG = {
   
     /** $500 – FIBER */
     fiber: {
-      guaranteedBox: 'campaigns/hempin-launch/rewards/fiber/guaranteed-surprise-box@2x.v2.webp',
+      guaranteedBox: 'campaigns/hempin-launch/rewards/fiber/guaranteed-surprise-box@2x.v3.webp',
     },
   
     /** $1000 – BAST */
