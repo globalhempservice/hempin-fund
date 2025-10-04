@@ -23,6 +23,8 @@ export default function RewardsGrid({
     return Array.from(new Set(prev));
   }, [tiers, i]);
 
+
+  
   return (
     <section className="hemp-panel" style={{ padding: 16, display:'grid', gap: 12 }}>
       <div>
