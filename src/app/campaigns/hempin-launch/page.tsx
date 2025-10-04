@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import TierSlider from '@/components/fund/TierSlider';
 import { createServerClientReadOnly } from '@/lib/supabase/server';
+import CampaignHero from '@/components/fund/CampaignHero';
 
 type CampaignTotals = {
   campaign_id: string;
@@ -61,59 +62,34 @@ const TIERS: Tier[] = [
           <PayErrorNotice />
         </Suspense>
 
-        {/* Header card */}
-        <div
-          className="hemp-panel"
-          style={{ marginTop: 12, padding: 16, display: 'grid', gap: 10, textAlign: 'center' }}
-        >
-          <p className="eyebrow">Hemp’in — Launch Campaign</p>
-          <h1 className="display-title hemp-underline-aurora">Fund the navigator</h1>
-          <p className="lede" style={{ margin: '6px auto 0', maxWidth: 720 }}>
-            Help us ship the next modules, keep infra humming, and welcome farms, brands, and researchers into the ecosystem.
-          </p>
+        // ... inside LaunchCampaignPage()
+<section className="container" style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}>
+  <Suspense fallback={null}>
+    <PayErrorNotice />
+  </Suspense>
 
-          {/* Progress */}
-          <div style={{ marginTop: 10 }}>
-            <div className="hemp-panel" style={{ padding: 10, background: 'rgba(255,255,255,.035)', borderColor: 'rgba(255,255,255,.08)' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 10 }}>
-                <strong style={{ letterSpacing: '.01em' }}>
-                  ${format(raised)} raised
-                </strong>
-                <span className="muted" style={{ fontSize: '.95rem' }}>
-                  Goal: ${format(goal)}
-                </span>
-              </div>
-              <div
-                style={{
-                  marginTop: 8,
-                  height: 10,
-                  borderRadius: 999,
-                  background: 'rgba(255,255,255,.06)',
-                  border: '1px solid rgba(255,255,255,.12)',
-                  overflow: 'hidden',
-                }}
-              >
-                <span
-                  aria-hidden
-                  style={{
-                    display: 'block',
-                    height: '100%',
-                    width: `${pct}%`,
-                    background: 'linear-gradient(90deg, var(--accent), var(--accent-2))',
-                  }}
-                />
-              </div>
-              <div className="muted" style={{ marginTop: 6, fontSize: '.92rem', textAlign: 'right' }}>
-                {pct}% funded
-              </div>
-            </div>
-          </div>
+  <CampaignHero
+    title="Fund the navigator"
+    subtitle="Help us ship the next modules, keep infra humming, and welcome farms, brands, and researchers into the ecosystem."
+    raised={raised}
+    goal={goal}
+    backers={backers}
+    startISO="2025-10-01"
+    endISO="2025-10-31"
+    live
+  />
 
-          {/* campaign meta */}
-          <div className="muted" style={{ fontSize: '.92rem' }}>
-            Live Oct 1 → Oct 31 • {backers} backer{backers === 1 ? '' : 's'} • all backers get the <strong>Early Backer</strong> badge
-          </div>
-        </div>
+  {/* Tiers — slider selector */}
+  <div id="tiers" style={{ marginTop: 16 }}>
+    <h2 className="display-title" style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}>
+      It's your turn to shine
+    </h2>
+    <div className="cta-scanline" aria-hidden />
+    <TierSlider campaignSlug="hempin-launch" tiers={TIERS} />
+  </div>
+
+  {/* ... keep the rest (story/FAQ/back link) */}
+</section>
 
         {/* Tiers — slider selector */}
         <div id="tiers" style={{ marginTop: 16 }}>
