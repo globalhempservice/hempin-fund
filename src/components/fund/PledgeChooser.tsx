@@ -1,64 +1,9 @@
-// src/components/fund/PledgeChooser.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import TierBadge from './TierBadge';
 
 export type Tier = { id: string; label: string; amount: number; adds?: string };
-
-/* ---- Reusable TierBadge ----
-   Small circular gradient badge with a subtle glow.
-   You can import this from anywhere to render a tier icon.
-*/
-export function TierBadge({
-  tierId,
-  size = 18,
-  title,
-}: {
-  tierId: string;
-  size?: number;
-  title?: string;
-}) {
-  // Map each tier to a gradient hue pair. Fallback uses pink→sky brand.
-  const palette: Record<string, [number, number]> = {
-    seed: [140, 160],     // greenish
-    sprout: [150, 180],   // mint→teal
-    stem: [180, 205],     // teal→cyan
-    leaf: [200, 220],     // cyan→blue
-    fiber: [220, 260],    // blue→indigo
-    bast: [280, 310],     // purple→magenta
-    core: [320, 350],     // magenta→rose
-    field: [10, 40],      // orange→amber
-    cosmos: [210, 320],   // multi-ish sweep, but we’ll just pick ends
-  };
-  const [h1, h2] = palette[tierId] ?? [330, 210];
-
-  const px = `${size}px`;
-  const style: React.CSSProperties = {
-    width: px,
-    height: px,
-    borderRadius: '50%',
-    display: 'inline-grid',
-    placeItems: 'center',
-    background: `linear-gradient(135deg, hsl(${h1} 85% 60%) 0%, hsl(${h2} 85% 62%) 100%)`,
-    boxShadow:
-      '0 0 10px rgba(236,72,153,.35), 0 0 14px var(--glow-cyan), inset 0 0 0 1px rgba(255,255,255,.35)',
-  };
-
-  // tiny sparkle glyph (can swap for svg later)
-  return (
-    <span className="tier-badge" aria-hidden title={title} style={style}>
-      <span
-        style={{
-          width: Math.max(4, Math.round(size / 6)),
-          height: Math.max(4, Math.round(size / 6)),
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,.9)',
-          filter: 'blur(0.2px)',
-        }}
-      />
-    </span>
-  );
-}
 
 export default function PledgeChooser({
   campaignSlug,
@@ -204,7 +149,7 @@ export default function PledgeChooser({
         Drag the slider, press ◀ / ▶, or tap a tier chip.
       </div>
 
-      {/* local styles (kept scoped) */}
+      {/* local styles (scoped) */}
       <style jsx>{`
         .slider-row{
           display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
@@ -257,7 +202,7 @@ export default function PledgeChooser({
 
         .jackpot{ text-shadow: 0 0 18px rgba(236,72,153,.28) }
 
-        /* CTA shimmer (same as before, kept for convenience) */
+        /* CTA shimmer */
         .shimmer{ position:relative; overflow:hidden; isolation:isolate; }
         .shimmer::after{
           content:""; position:absolute; inset:0 -40% 0 auto; width:40%;
@@ -271,7 +216,6 @@ export default function PledgeChooser({
           45%,100%{ transform: skewX(-18deg) translateX(-160%); opacity:0 }
         }
 
-        /* Optional: tiny spacing tweak for chips on small screens */
         @media (max-width: 420px){
           .tier-chip{ font-size:.92rem; padding:7px 10px }
         }
