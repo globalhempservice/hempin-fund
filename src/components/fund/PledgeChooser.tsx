@@ -1,9 +1,10 @@
+// src/components/fund/PledgeChooser.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import TierBadge from './TierBadge';
+import { TierBadge, type TierId } from './TierBadge';
 
-export type Tier = { id: string; label: string; amount: number; adds?: string };
+export type Tier = { id: TierId; label: string; amount: number; adds?: string };
 
 export default function PledgeChooser({
   campaignSlug,
@@ -59,7 +60,6 @@ export default function PledgeChooser({
       <div className="center">
         <div className="eyebrow">LEVEL</div>
         <div style={{ marginTop: 8, display:'inline-grid', gap:6, justifyItems:'center' }}>
-          {/* Badge next to the level label */}
           <div style={{ display:'inline-flex', alignItems:'center', gap:8 }}>
             <TierBadge tierId={t.id} size={18} title={t.label} />
             <div className="planet-title" style={{ fontSize: 'clamp(20px,3.4vw,26px)', fontWeight: 800 }}>
@@ -107,7 +107,7 @@ export default function PledgeChooser({
         ))}
       </div>
 
-      {/* track + arrows (no extra orb) */}
+      {/* track + arrows */}
       <div className="slider-row">
         <button
           type="button"
@@ -149,7 +149,7 @@ export default function PledgeChooser({
         Drag the slider, press ◀ / ▶, or tap a tier chip.
       </div>
 
-      {/* local styles (scoped) */}
+      {/* local styles */}
       <style jsx>{`
         .slider-row{
           display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
@@ -202,7 +202,6 @@ export default function PledgeChooser({
 
         .jackpot{ text-shadow: 0 0 18px rgba(236,72,153,.28) }
 
-        /* CTA shimmer */
         .shimmer{ position:relative; overflow:hidden; isolation:isolate; }
         .shimmer::after{
           content:""; position:absolute; inset:0 -40% 0 auto; width:40%;
