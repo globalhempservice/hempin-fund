@@ -1,8 +1,64 @@
+// src/components/fund/PledgeChooser.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
-type Tier = { id: string; label: string; amount: number; adds?: string };
+export type Tier = { id: string; label: string; amount: number; adds?: string };
+
+/* ---- Reusable TierBadge ----
+   Small circular gradient badge with a subtle glow.
+   You can import this from anywhere to render a tier icon.
+*/
+export function TierBadge({
+  tierId,
+  size = 18,
+  title,
+}: {
+  tierId: string;
+  size?: number;
+  title?: string;
+}) {
+  // Map each tier to a gradient hue pair. Fallback uses pink→sky brand.
+  const palette: Record<string, [number, number]> = {
+    seed: [140, 160],     // greenish
+    sprout: [150, 180],   // mint→teal
+    stem: [180, 205],     // teal→cyan
+    leaf: [200, 220],     // cyan→blue
+    fiber: [220, 260],    // blue→indigo
+    bast: [280, 310],     // purple→magenta
+    core: [320, 350],     // magenta→rose
+    field: [10, 40],      // orange→amber
+    cosmos: [210, 320],   // multi-ish sweep, but we’ll just pick ends
+  };
+  const [h1, h2] = palette[tierId] ?? [330, 210];
+
+  const px = `${size}px`;
+  const style: React.CSSProperties = {
+    width: px,
+    height: px,
+    borderRadius: '50%',
+    display: 'inline-grid',
+    placeItems: 'center',
+    background: `linear-gradient(135deg, hsl(${h1} 85% 60%) 0%, hsl(${h2} 85% 62%) 100%)`,
+    boxShadow:
+      '0 0 10px rgba(236,72,153,.35), 0 0 14px var(--glow-cyan), inset 0 0 0 1px rgba(255,255,255,.35)',
+  };
+
+  // tiny sparkle glyph (can swap for svg later)
+  return (
+    <span className="tier-badge" aria-hidden title={title} style={style}>
+      <span
+        style={{
+          width: Math.max(4, Math.round(size / 6)),
+          height: Math.max(4, Math.round(size / 6)),
+          borderRadius: '50%',
+          background: 'rgba(255,255,255,.9)',
+          filter: 'blur(0.2px)',
+        }}
+      />
+    </span>
+  );
+}
 
 export default function PledgeChooser({
   campaignSlug,
@@ -57,46 +113,56 @@ export default function PledgeChooser({
       {/* header */}
       <div className="center">
         <div className="eyebrow">LEVEL</div>
-        <div style={{ marginTop: 6 }}>
-          <div className="planet-title" style={{ fontSize: 'clamp(20px,3.4vw,26px)', fontWeight: 800 }}>
-            {t.label}
+        <div style={{ marginTop: 8, display:'inline-grid', gap:6, justifyItems:'center' }}>
+          {/* Badge next to the level label */}
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8 }}>
+            <TierBadge tierId={t.id} size={18} title={t.label} />
+            <div className="planet-title" style={{ fontSize: 'clamp(20px,3.4vw,26px)', fontWeight: 800 }}>
+              {t.label}
+            </div>
           </div>
+
           <div
             className="jackpot"
             aria-live="polite"
-            style={{ marginTop: 2, fontWeight: 900, fontSize: 'clamp(22px,4.3vw,34px)', letterSpacing: '.02em' }}
+            style={{ fontWeight: 900, fontSize: 'clamp(22px,4.3vw,34px)', letterSpacing: '.02em' }}
           >
             ${animated.toLocaleString()}
           </div>
         </div>
+
         <div style={{ marginTop: 10 }}>
-          <a className="btn primary thruster" href={payHref(t)}>
+          <a className="btn primary thruster shimmer" href={payHref(t)}>
             Pledge ${t.amount.toLocaleString()}
           </a>
         </div>
       </div>
 
-      {/* chips */}
+      {/* chips (each with a badge) */}
       <div className="center" style={{ display:'flex', flexWrap:'wrap', gap:8, justifyContent:'center' }}>
         {tiers.map((tier, idx) => (
           <button
             key={tier.id}
             type="button"
             onClick={() => onChangeIndex(idx)}
-            className="pill"
+            className="pill tier-chip"
             aria-current={i === idx}
             style={{
               borderColor: i === idx ? 'rgba(255,255,255,.22)' : undefined,
               boxShadow: i === idx ? '0 0 0 2px rgba(236,72,153,.25)' : undefined,
-              fontWeight: 800
+              fontWeight: 800,
+              display:'inline-flex',
+              alignItems:'center',
+              gap:8,
             }}
           >
+            <TierBadge tierId={tier.id} size={14} title={tier.label} />
             {tier.label} · ${tier.amount.toLocaleString()}
           </button>
         ))}
       </div>
 
-      {/* track + arrows (no orb) */}
+      {/* track + arrows (no extra orb) */}
       <div className="slider-row">
         <button
           type="button"
@@ -138,7 +204,7 @@ export default function PledgeChooser({
         Drag the slider, press ◀ / ▶, or tap a tier chip.
       </div>
 
-      {/* local styles */}
+      {/* local styles (kept scoped) */}
       <style jsx>{`
         .slider-row{
           display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px;
@@ -150,12 +216,12 @@ export default function PledgeChooser({
           background: linear-gradient(90deg, var(--accent), var(--accent-2));
           color:#05120e;
           box-shadow: 0 0 18px rgba(236,72,153,.35), 0 6px 18px rgba(0,0,0,.30);
+          transition: transform .14s ease, box-shadow .18s ease, border-color .18s ease;
         }
+        .pink-arrow:hover{ transform: translateY(-1px) }
         .pink-arrow:disabled{ opacity:.55; cursor:not-allowed; filter:grayscale(.2) }
 
-        .track-wrap{
-          position:relative; height:14px; border-radius:999px;
-        }
+        .track-wrap{ position:relative; height:14px; border-radius:999px; }
         .track-bg{
           position:absolute; inset:0;
           background: rgba(255,255,255,.10);
@@ -170,14 +236,14 @@ export default function PledgeChooser({
           pointer-events:none;
         }
         .tier-range{
-          position:absolute; inset:-8px 0 -8px;  /* larger hit area; perfectly centered */
+          position:absolute; inset:-8px 0 -8px;
           appearance:none; background:transparent; width:100%; height:30px;
         }
         .tier-range::-webkit-slider-runnable-track{ height:0; background:transparent; border:0 }
         .tier-range::-moz-range-track{ height:0; background:transparent; border:0 }
         .tier-range::-webkit-slider-thumb{
           appearance:none; width:22px; height:22px; border-radius:50%;
-          margin-top:-6px; /* centers over 14px track */
+          margin-top:-6px;
           background: radial-gradient(circle at 40% 40%, #fff 0 35%, #f9a8d4 36% 70%, rgba(0,0,0,0) 72%);
           border:1px solid rgba(255,255,255,.35);
           box-shadow: 0 0 12px rgba(236,72,153,.65), 0 0 18px var(--glow-cyan);
@@ -190,6 +256,25 @@ export default function PledgeChooser({
         }
 
         .jackpot{ text-shadow: 0 0 18px rgba(236,72,153,.28) }
+
+        /* CTA shimmer (same as before, kept for convenience) */
+        .shimmer{ position:relative; overflow:hidden; isolation:isolate; }
+        .shimmer::after{
+          content:""; position:absolute; inset:0 -40% 0 auto; width:40%;
+          background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.24) 45%, rgba(255,255,255,0) 100%);
+          transform: skewX(-18deg) translateX(120%); animation: sheen 2.4s ease-in-out infinite;
+          mix-blend-mode: screen; pointer-events:none;
+        }
+        @keyframes sheen{
+          0%{ transform: skewX(-18deg) translateX(120%); opacity:0 }
+          10%{ opacity:.9 }
+          45%,100%{ transform: skewX(-18deg) translateX(-160%); opacity:0 }
+        }
+
+        /* Optional: tiny spacing tweak for chips on small screens */
+        @media (max-width: 420px){
+          .tier-chip{ font-size:.92rem; padding:7px 10px }
+        }
       `}</style>
     </section>
   );
