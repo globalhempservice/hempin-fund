@@ -3,6 +3,7 @@
 
 import React from 'react';
 
+// Keep this union if it's useful elsewhere, but don't require it for the prop.
 export type TierId =
   | 'seed'
   | 'sprout'
@@ -15,13 +16,13 @@ export type TierId =
   | 'cosmos';
 
 type Props = {
-  tierId: TierId;
+  tierId: string;   // <-- accept any string (fixes type drift)
   size?: number;
   title?: string;
 };
 
 export function TierBadge({ tierId, size = 18, title }: Props) {
-  // Hue pairs for each tier (HSL)
+  // Palette defined for known ids; unknown ids fall back below
   const palette: Record<TierId, [number, number]> = {
     seed:   [140, 160],  // greenish
     sprout: [150, 180],  // mint → teal
@@ -34,7 +35,10 @@ export function TierBadge({ tierId, size = 18, title }: Props) {
     cosmos: [210, 320],  // cyan → magenta sweep
   };
 
-  const [h1, h2] = palette[tierId] ?? [330, 210];
+  // Index with a string and provide a safe brand fallback
+  const pair = (palette as Record<string, [number, number]>)[tierId] ?? [330, 210];
+  const [h1, h2] = pair;
+
   const px = `${size}px`;
 
   return (
@@ -66,5 +70,5 @@ export function TierBadge({ tierId, size = 18, title }: Props) {
   );
 }
 
-// Optional default export to be resilient if someone uses `import TierBadge from ...`
+// Optional default export so both import styles work
 export default TierBadge;

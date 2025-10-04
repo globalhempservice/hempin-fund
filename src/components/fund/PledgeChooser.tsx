@@ -2,9 +2,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { TierBadge, type TierId } from './TierBadge';
+import { TierBadge } from './TierBadge';
+import type { Tier as TierFromList } from './TierList';
 
-export type Tier = { id: TierId; label: string; amount: number; adds?: string };
+// Re-export Tier so existing imports from PledgeChooser remain valid.
+export type Tier = TierFromList;
 
 export default function PledgeChooser({
   campaignSlug,
