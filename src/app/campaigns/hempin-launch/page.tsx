@@ -63,7 +63,7 @@ const TIERS: Tier[] = [
           <PayErrorNotice />
         </Suspense>
 
-        // ... inside LaunchCampaignPage()
+       
 <section className="container" style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}>
   <Suspense fallback={null}>
     <PayErrorNotice />
@@ -86,20 +86,12 @@ const TIERS: Tier[] = [
     It's your turn to shine
   </h2>
   <div className="cta-scanline" aria-hidden />
+  
   <PledgeChooser campaignSlug="hempin-launch" tiers={TIERS} />
-</div>
+  </div>
 
   {/* ... keep the rest (story/FAQ/back link) */}
 </section>
-
-        {/* Tiers — slider selector */}
-        <div id="tiers" style={{ marginTop: 16 }}>
-          <h2 className="display-title" style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}>
-            It's your turn to shine
-          </h2>
-          <div className="cta-scanline" aria-hidden />
-          <TierSlider campaignSlug="hempin-launch" tiers={TIERS} />
-        </div>
 
         {/* Story / what you enable */}
         <article id="story" className="hemp-panel" style={{ marginTop: 16, padding: 14 }}>
