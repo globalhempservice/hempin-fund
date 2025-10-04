@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+
 import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import { createServerClientReadOnly } from '@/lib/supabase/server';
 import CampaignHero from '@/components/fund/CampaignHero';
 import PledgeSection from '@/components/fund/PledgeSection';
+
+// ✅ Single source of truth for tiers
+import { HEMPIN_TIERS } from '@/components/fund/TierList';
 import type { Tier as UITier } from '@/components/fund/PledgeChooser';
 
 type CampaignTotals = {
@@ -19,27 +23,16 @@ export const metadata: Metadata = {
     "Back Hemp’in’s public launch: build software modules, keep the lights on, and invite the hemp universe in.",
 };
 
-// ——— Tiers typed against the UI union (TierId) ———
-const TIERS = [
-  { id: 'seed',   label: 'Seed',   amount: 20,    adds: 'Thank you · Early Backer badge' },
-  { id: 'sprout', label: 'Sprout', amount: 50,    adds: 'Name on the “Founding log”' },
-  { id: 'stem',   label: 'Stem',   amount: 100,   adds: 'Priority invites to early features' },
-  { id: 'leaf',   label: 'Leaf',   amount: 250,   adds: '“Multipass” seasonal digital card' },
-  { id: 'fiber',  label: 'Fiber',  amount: 500,   adds: 'Surprise drop (3–6 months)' },
-  { id: 'bast',   label: 'Bast',   amount: 1000,  adds: 'Founder wall highlight' },
-  { id: 'core',   label: 'Core',   amount: 2500,  adds: 'Founders circle channel + roadmap votes' },
-  { id: 'field',  label: 'Field',  amount: 5000,  adds: 'Custom shout-out (opt-in)' },
-  { id: 'cosmos', label: 'Cosmos', amount: 10000, adds: 'Lifetime multipass + priority windows' },
-] satisfies UITier[];
+// Use SSOT (Seed → Core $2,000). Cast to the UI type.
+const TIERS = HEMPIN_TIERS as unknown as UITier[];
 
 export default async function LaunchCampaignPage() {
   const supa = createServerClientReadOnly();
 
-  // totals from Supabase
+  // live totals
   const { data: totalsRaw, error } = await supa
     .rpc('campaign_totals', { slug: 'hempin-launch' })
     .single();
-
   if (error) console.error('campaign_totals RPC failed', error);
 
   const totals  = (totalsRaw as CampaignTotals | null) ?? null;
@@ -55,10 +48,7 @@ export default async function LaunchCampaignPage() {
         <div className="starfield layer-b" />
       </div>
 
-      <section
-        className="container"
-        style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}
-      >
+      <section className="container" style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}>
         <Suspense fallback={null}>
           <PayErrorNotice />
         </Suspense>
@@ -74,16 +64,12 @@ export default async function LaunchCampaignPage() {
           live
         />
 
-        {/* Section 2 — slider + rewards (PledgeSection comp) */}
+        {/* Tiers + CTA + Rewards */}
         <div id="tiers" style={{ marginTop: 16 }}>
-          <h2
-            className="display-title"
-            style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}
-          >
+          <h2 className="display-title" style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}>
             It&apos;s your turn to shine
           </h2>
           <div className="cta-scanline" aria-hidden />
-
           <PledgeSection campaignSlug="hempin-launch" tiers={TIERS} />
         </div>
 
@@ -101,7 +87,7 @@ export default async function LaunchCampaignPage() {
           </div>
         </article>
 
-        {/* FAQ mini */}
+        {/* FAQ */}
         <div className="hemp-panel" style={{ marginTop: 12, padding: 14 }}>
           <h3 style={{ margin: '0 0 6px' }}>FAQ</h3>
           <details>
