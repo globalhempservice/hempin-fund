@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import PledgeSlider from './PledgeSlider';
-import RewardGrid from './RewardGrid';
+import { useState } from 'react';
+import PledgeChooser from './PledgeChooser';
+import RewardsGrid from './RewardsGrid';
 
-export type Tier = { id: string; label: string; amount: number; adds?: string };
+type Tier = { id: string; label: string; amount: number; adds?: string };
 
 export default function PledgeSection({
   campaignSlug,
@@ -15,33 +15,22 @@ export default function PledgeSection({
   tiers: Tier[];
   defaultIndex?: number;
 }) {
-  const [index, setIndex] = useState(
+  const [i, setI] = useState(
     Math.min(Math.max(defaultIndex, 0), Math.max(0, tiers.length - 1))
   );
 
-  const tier = tiers[index];
-
   return (
     <>
-      {/* BOX 1 — slider/controls */}
-      <section className="hemp-panel" style={{ padding: 16 }}>
-        <PledgeSlider
-          tiers={tiers}
-          index={index}
-          onIndexChange={setIndex}
-          campaignSlug={campaignSlug}
-        />
-      </section>
+      <PledgeChooser
+        campaignSlug={campaignSlug}
+        tiers={tiers}
+        selectedIndex={i}
+        onChangeIndex={setI}
+      />
 
-      {/* BOX 2 — rewards */}
-      <section className="hemp-panel" style={{ padding: 16, marginTop: 14 }}>
-        <RewardGrid
-          tiers={tiers}
-          index={index}
-          campaignSlug={campaignSlug}
-          key={`grid-${tier.id}`} // forces a quick entry animation on change
-        />
-      </section>
+      <div style={{ marginTop: 14 }}>
+        <RewardsGrid tiers={tiers} selectedIndex={i} />
+      </div>
     </>
   );
 }

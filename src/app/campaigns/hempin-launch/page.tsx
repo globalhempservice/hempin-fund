@@ -5,7 +5,9 @@ import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import { createServerClientReadOnly } from '@/lib/supabase/server';
 import CampaignHero from '@/components/fund/CampaignHero';
 import PledgeChooser from '@/components/fund/PledgeChooser';
-import {HEMPIN_TIERS } from '@/components/fund/TierList';
+import { HEMPIN_TIERS } from '@/components/fund/TierList';
+import PledgeSection from '@/components/fund/PledgeSection';
+
 
 type CampaignTotals = {
   campaign_id: string;
@@ -66,15 +68,17 @@ export default async function LaunchCampaignPage() {
 
         {/* Section 2 — slider + rewards (in its own component) */}
         <div id="tiers" style={{ marginTop: 16 }}>
-          <h2
-            className="display-title"
-            style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}
-          >
-            It&apos;s your turn to shine
-          </h2>
-          <div className="cta-scanline" aria-hidden />
-          <PledgeChooser campaignSlug="hempin-launch" tiers={HEMPIN_TIERS} />
-        </div>
+  <h2
+    className="display-title"
+    style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}
+  >
+    It&apos;s your turn to shine
+  </h2>
+  <div className="cta-scanline" aria-hidden />
+
+  {/* Wrapped: selector + rewards, synced */}
+  <PledgeSection campaignSlug="hempin-launch" tiers={HEMPIN_TIERS} />
+</div>
 
         {/* Story / what you enable */}
         <article id="story" className="hemp-panel" style={{ marginTop: 16, padding: 14 }}>
