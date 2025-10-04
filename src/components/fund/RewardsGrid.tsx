@@ -8,20 +8,15 @@ function splitAdds(t: Tier) {
   if (!t.adds) return [] as string[];
   return t.adds.split(/ · |\s\+\s/g).map(s => s.trim()).filter(Boolean);
 }
-
 function slugify(s: string) {
-  return s
-    .toLowerCase()
-    .replace(/["'’]/g, '')      // remove quotes/apostrophes
-    .replace(/[^a-z0-9]+/g, '-') // non-alnum -> -
-    .replace(/^-+|-+$/g, '');    // trim -
+  return s.toLowerCase().replace(/["'’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
 export default function RewardsGrid({
   tiers,
   selectedIndex,
-  cdnBase,           // optional: e.g. "https://<proj>.supabase.co/storage/v1/object/public/fund_rewards"
-  images,            // optional explicit mapping: { [slug]: "https://..." }
+  cdnBase,
+  images,
 }: {
   tiers: Tier[];
   selectedIndex: number;
@@ -39,22 +34,26 @@ export default function RewardsGrid({
   const getImg = (rewardTitle: string) => {
     const slug = slugify(rewardTitle);
     if (images?.[slug]) return images[slug];
-    if (cdnBase) return `${cdnBase}/${slug}.webp`;   // fallback pattern
+    if (cdnBase) return `${cdnBase}/${slug}.webp`;
     return null;
   };
 
   return (
-    // key={i} triggers a tiny fade/slide on tier change
-    <section key={i} className="hemp-panel reward-wrap" style={{ padding: 16, display: 'grid', gap: 12 }}>
+    <section className="hemp-panel reward-wrap" style={{ padding: 16, display:'grid', gap: 12 }}>
       <div>
         <div className="eyebrow" style={{ marginBottom: 8 }}>NOW UNLOCKED</div>
-        <ul className="reward-row">
+        {/* key on UL re-triggers enter animations only when the tier changes */}
+        <ul key={`now-${i}`} className="reward-row">
           {nowUnlocked.length === 0 ? (
             <li className="reward-card ghost-card">Nothing extra at this tier (yet)</li>
           ) : nowUnlocked.map((p, idx) => {
               const src = getImg(p);
               return (
-                <li key={`now-${idx}`} className="reward-card">
+                <li
+                  key={`now-${idx}`}
+                  className="reward-card enter pulse"
+                  style={{ ['--delay' as any]: `${idx * 40}ms` }}
+                >
                   <div className={`media${src ? ' has-img' : ''}`} aria-hidden>
                     {src ? <img src={src} alt="" loading="lazy" /> : null}
                   </div>
@@ -69,11 +68,15 @@ export default function RewardsGrid({
       {alsoIncluded.length > 0 && (
         <div>
           <div className="eyebrow" style={{ marginBottom: 8 }}>ALSO INCLUDED</div>
-          <ul className="reward-row">
+          <ul key={`inc-${i}`} className="reward-row">
             {alsoIncluded.map((p, idx) => {
               const src = getImg(p);
               return (
-                <li key={`inc-${idx}`} className="reward-card subtle">
+                <li
+                  key={`inc-${idx}`}
+                  className="reward-card enter"
+                  style={{ ['--delay' as any]: `${idx * 35}ms` }}
+                >
                   <div className={`media${src ? ' has-img' : ''}`} aria-hidden>
                     {src ? <img src={src} alt="" loading="lazy" /> : null}
                   </div>
@@ -87,12 +90,6 @@ export default function RewardsGrid({
       )}
 
       <style jsx>{`
-        .reward-wrap{
-          animation: fadeIn .28s ease both, rise .28s ease both;
-        }
-        @keyframes fadeIn { from { opacity:.0 } to { opacity:1 } }
-        @keyframes rise   { from { transform: translateY(4px) } to { transform:none } }
-
         .reward-row{
           list-style:none; margin:0; padding:0;
           display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px;
@@ -103,7 +100,7 @@ export default function RewardsGrid({
           background: rgba(255,255,255,.06);
           border:1px solid rgba(255,255,255,.12);
           box-shadow: 0 6px 18px rgba(0,0,0,.25), 0 0 10px rgba(236,72,153,.12);
-          transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+          transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, opacity .16s ease;
         }
         .reward-card.subtle{ opacity:.9; background:rgba(255,255,255,.04) }
         .reward-card:hover{
@@ -112,22 +109,44 @@ export default function RewardsGrid({
           border-color: rgba(255,255,255,.18);
         }
 
+        /* Enter animation (fade + slight rise) */
+        .enter{
+          opacity: 0; transform: translateY(4px);
+          animation: cardIn .28s cubic-bezier(.22,.61,.36,1) both;
+          animation-delay: var(--delay, 0ms);
+        }
+        @keyframes cardIn {
+          to { opacity: 1; transform: none; }
+        }
+
+        /* Soft pulse only for "NOW UNLOCKED" row (adds) */
+        .pulse{
+          animation:
+            cardIn .28s cubic-bezier(.22,.61,.36,1) both,
+            pulseGlow .9s ease-out both;
+          animation-delay: var(--delay, 0ms), calc(var(--delay, 0ms) + 60ms);
+        }
+        @keyframes pulseGlow {
+          0%  { box-shadow: 0 0 0 0 rgba(236,72,153,.0), 0 0 10px rgba(236,72,153,.12) }
+          40% { box-shadow: 0 0 0 6px rgba(236,72,153,.18), 0 0 16px rgba(236,72,153,.22) }
+          100%{ box-shadow: 0 0 0 0 rgba(236,72,153,.0), 0 0 10px rgba(236,72,153,.12) }
+        }
+
         .media{
           width:100%; aspect-ratio: 5/3; border-radius:10px;
           background: linear-gradient(135deg, rgba(236,72,153,.22), rgba(96,165,250,.18));
           box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
           display:grid; place-items:center; overflow:hidden;
         }
-        .media.has-img{
-          background: rgba(255,255,255,.02);
-        }
-        .media img{
-          width:100%; height:100%; object-fit:cover; display:block;
-        }
+        .media.has-img{ background: rgba(255,255,255,.02) }
+        .media img{ width:100%; height:100%; object-fit:cover; display:block }
 
         .title{ font-weight:800; letter-spacing:.01em }
         .mini{ font-size:.85rem }
-        .ghost-card{ display:flex; align-items:center; justify-content:center; font-style:italic }
+
+        @media (prefers-reduced-motion: reduce){
+          .enter, .pulse{ animation: none !important; opacity: 1 !important; transform: none !important; }
+        }
       `}</style>
     </section>
   );

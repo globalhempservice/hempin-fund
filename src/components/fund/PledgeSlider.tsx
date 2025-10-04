@@ -1,6 +1,7 @@
+// src/components/fund/PledgeSlider.tsx
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { Tier } from './PledgeSection';
 
 export default function PledgeSlider({
@@ -72,7 +73,7 @@ export default function PledgeSlider({
           </div>
         </div>
         <div style={{ marginTop: 10 }}>
-          <a className="btn primary thruster" href={payHref(t)}>
+          <a className="btn primary thruster shimmer" href={payHref(t)}>
             Pledge ${t.amount.toLocaleString()}
           </a>
         </div>
@@ -100,11 +101,23 @@ export default function PledgeSlider({
 
       {/* Slider (thumb sits on the bar) with arrows on the sides */}
       <div className="range-row">
-        <button type="button" onClick={dec} disabled={index===0} aria-label="Previous tier" className="btn game nav">◀</button>
+        <button
+          type="button"
+          onClick={dec}
+          disabled={index===0}
+          aria-label="Previous tier"
+          className="btn game nav glow"
+        >
+          ◀
+        </button>
 
         <div className="range-wrap">
           <div className="range-bar">
-            <span aria-hidden style={{ width: `${pct}%`, display:'block', height:'100%', background:'linear-gradient(90deg, var(--accent), var(--accent-2))' }} />
+            <span
+              aria-hidden
+              style={{ width: `${pct}%`, display:'block', height:'100%',
+                background:'linear-gradient(90deg, var(--accent), var(--accent-2))' }}
+            />
           </div>
           <input
             className="tier-range"
@@ -118,7 +131,15 @@ export default function PledgeSlider({
           />
         </div>
 
-        <button type="button" onClick={inc} disabled={index===maxIndex} aria-label="Next tier" className="btn game nav">▶</button>
+        <button
+          type="button"
+          onClick={inc}
+          disabled={index===maxIndex}
+          aria-label="Next tier"
+          className="btn game nav glow"
+        >
+          ▶
+        </button>
       </div>
 
       <div className="muted center" style={{ fontSize: '.9rem' }}>
@@ -133,12 +154,39 @@ export default function PledgeSlider({
           align-items:center;
           gap:10px;
         }
-        .btn.game.nav{ min-width:44px; height:40px; display:grid; place-items:center;
-          border-radius:10px; font-weight:800; border:1px solid rgba(255,255,255,.15);
-          background:rgba(255,255,255,.08)
+
+        /* Glowy pink arrow buttons */
+        .btn.game.nav{
+          min-width:44px; height:40px; display:grid; place-items:center;
+          border-radius:10px; font-weight:800;
+          border:1px solid rgba(255,255,255,.18);
+          background: rgba(255,255,255,.08);
+          transition: transform .14s ease, box-shadow .18s ease, border-color .18s ease;
         }
+        .btn.game.nav.glow{
+          box-shadow:
+            0 0 0 0 rgba(236,72,153,0),
+            0 8px 18px rgba(0,0,0,.25),
+            0 0 0 1px rgba(236,72,153,.18) inset;
+        }
+        .btn.game.nav.glow:hover{
+          transform: translateY(-1px);
+          border-color: rgba(236,72,153,.35);
+          box-shadow:
+            0 0 0 4px rgba(236,72,153,.22),
+            0 10px 22px rgba(0,0,0,.35),
+            0 0 22px rgba(236,72,153,.35);
+        }
+        .btn.game.nav:focus-visible{
+          outline: none;
+          box-shadow:
+            0 0 0 4px rgba(236,72,153,.35),
+            0 0 0 1px rgba(255,255,255,.9) inset;
+        }
+        .btn.game.nav:active{ transform: translateY(0); }
         .btn.game.nav:disabled{ opacity:.5; cursor:not-allowed }
 
+        /* Track + thumb */
         .range-wrap{ position:relative; height:32px; }
         .range-bar{
           position:absolute; left:0; right:0; top:50%;
@@ -148,10 +196,15 @@ export default function PledgeSlider({
           pointer-events:none;
         }
 
-        .tier-range{ position:absolute; inset:0; width:100%; height:32px; background:transparent; appearance:none }
+        .tier-range{
+          position:absolute; inset:0; width:100%; height:32px;
+          background:transparent; appearance:none;
+        }
+        /* keep the native track invisible so we control visuals with .range-bar */
         .tier-range::-webkit-slider-runnable-track{ height:10px; background:transparent; border:0 }
         .tier-range::-moz-range-track{ height:10px; background:transparent; border:0 }
 
+        /* Thumb centered on 10px track */
         .tier-range::-webkit-slider-thumb{
           appearance:none; width:22px; height:22px; border-radius:50%;
           margin-top:-6px; /* centers on a 10px track */
@@ -167,6 +220,45 @@ export default function PledgeSlider({
         }
 
         .jackpot{ text-shadow: 0 0 18px rgba(236,72,153,.28) }
+
+        /* --- Button shimmer sweep on the primary pledge CTA --- */
+        .shimmer{
+          position: relative;
+          overflow: hidden;
+          isolation: isolate;
+        }
+        .shimmer::after{
+          content:"";
+          position:absolute; inset:0 -40% 0 auto; /* start off the right */
+          width: 40%;
+          background: linear-gradient(
+            100deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,.24) 45%,
+            rgba(255,255,255,0) 100%
+          );
+          transform: skewX(-18deg) translateX(120%);
+          animation: sheen 2.4s ease-in-out infinite;
+          mix-blend-mode: screen;
+          pointer-events:none;
+        }
+        @keyframes sheen{
+          0%   { transform: skewX(-18deg) translateX(120%); opacity:.0 }
+          10%  { opacity:.9 }
+          45%  { transform: skewX(-18deg) translateX(-160%); opacity:.0 }
+          100% { transform: skewX(-18deg) translateX(-160%); opacity:.0 }
+        }
+        .shimmer:hover{
+          box-shadow:
+            0 0 0 4px rgba(236,72,153,.20),
+            0 10px 22px rgba(0,0,0,.35),
+            0 0 26px rgba(236,72,153,.35);
+        }
+
+        @media (prefers-reduced-motion: reduce){
+          .shimmer::after{ animation:none !important; transform:none !important; opacity:0 !important; }
+          .btn.game.nav, .btn.game.nav:hover{ transform:none !important; box-shadow:none !important; }
+        }
       `}</style>
     </div>
   );
