@@ -14,7 +14,7 @@ export const HEMPIN_TIERS: Tier[] = [
     label: 'Seed',
     amount: 20,
     adds:
-      'A chance to win a Surprise Hemp’in Drop Box · 1 raffle ticket per $20 · Thank you note (opt-in/out) · 1 random Cosmos sticker · Early Backer badge'
+      'A chance to win a Surprise Hemp’in Drop Box · Thank you note (opt-in/out) · 1 random Cosmos sticker · Early Backer badge'
   },
   {
     id: 'sprout',
