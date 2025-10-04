@@ -64,7 +64,7 @@ export default function CampaignHero(props: CampaignHeroProps) {
         <span className="pill muted">{daysLeft} day{daysLeft === 1 ? '' : 's'} left</span>
       </div>
 
-      <p className="eyebrow">Hemp’in — Launch Campaign</p>
+      <p className="eyebrow">Hemp’in — MARKET LAUNCH</p>
       <h1 className="display-title hemp-underline-aurora">{title}</h1>
       <p className="lede" style={{ margin: '6px auto 0', maxWidth: 720 }}>
         {subtitle}
@@ -113,32 +113,6 @@ export default function CampaignHero(props: CampaignHeroProps) {
         </div>
       </div>
 
-      {/* Categories */}
-      <div style={{ marginTop: 2 }}>
-        <div className="row" style={{ justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
-          {categories.map(c => (
-            <span key={c.key}
-              className="pill"
-              style={{
-                display:'inline-flex', alignItems:'center', gap:8,
-                boxShadow:'0 0 0 1px rgba(255,255,255,.06) inset',
-              }}>
-              <span
-                aria-hidden
-                style={{
-                  width:18, height:18, display:'grid', placeItems:'center',
-                  borderRadius:6,
-                  background:`radial-gradient(circle at 40% 40%, #fff 0 40%, hsl(${c.hue} 80% 65% / .35) 42% 80%, transparent 82%)`,
-                  boxShadow:`0 0 10px hsl(${c.hue} 80% 65% / .35)`
-                }}
-              >
-                <span style={{ fontSize:12, lineHeight:1 }}>{c.icon}</span>
-              </span>
-              <span style={{ fontWeight:700 }}>{c.label}</span>
-            </span>
-          ))}
-        </div>
-      </div>
 
       {/* CTA */}
       <div className="hero .cta-row" style={{ padding: 0, margin: 0 }}>
