@@ -47,7 +47,7 @@ function resolveRewardImage(perk: string, tierId: Tier['id']): string | null {
     return REWARD_IMG.bast.fourBoxes;
 
   // core
-  if ((s.includes('ten') || s.includes('10')) && s.includes('boxes'))
+  if ((s.includes('six') || s.includes('6')) && s.includes('boxes'))
     return REWARD_IMG.core.tenBoxes;
 
   // fallback: nothing matched
