@@ -19,7 +19,7 @@ export const REWARD_IMG = {
     /** $50 – SPROUT */
     sprout: {
       stickerSet: 'campaigns/hempin-launch/rewards/sprout/sticker-set-full@2x.v1.webp',
-      orbTeeRaffle: 'campaigns/hempin-launch/rewards/sprout/orb-tee-raffle@2x.v1.webp',
+      orbTeeRaffle: 'campaigns/hempin-launch/rewards/sprout/orb-tee-raffle@2x.v2.webp',
     },
   
     /** $100 – STEM */
