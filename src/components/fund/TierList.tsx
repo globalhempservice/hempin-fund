@@ -21,42 +21,42 @@ export const HEMPIN_TIERS: Tier[] = [
     label: 'Sprout',
     amount: 50,
     adds:
-      'All previous rewards · Full Hemp’in sticker collection · Chance to win limited edition Hemp’in Orb hemp tee'
+      'Full Hemp’in sticker collection · Chance to win limited edition Hemp’in Orb hemp tee'
   },
   {
     id: 'stem',
     label: 'Stem',
     amount: 100,
     adds:
-      'All previous rewards · Innovative Velcro Hemp’in logo kit to customize any clothes'
+      'Innovative Velcro Hemp’in logo kit to customize any clothes'
   },
   {
     id: 'leaf',
     label: 'Leaf',
     amount: 250,
     adds:
-      'All previous rewards · One limited edition Hemp’in T-shirt'
+      'One limited edition Hemp’in T-shirt'
   },
   {
     id: 'fiber',
     label: 'Fiber',
     amount: 500,
     adds:
-      'All previous rewards · One guaranteed Hemp’in Surprise Box Drop at the marketplace opening'
+      'One guaranteed Hemp’in Surprise Box Drop at the marketplace opening'
   },
   {
     id: 'bast',
     label: 'Bast',
     amount: 1000,
     adds:
-      'All previous rewards · Four guaranteed Surprise Boxes during the next year'
+      '+4 EXTRA guaranteed Surprise Boxes during the next year'
   },
   {
     id: 'core',
     label: 'Core',
     amount: 2000,
     adds:
-      'All previous rewards · Ten guaranteed Surprise Boxes during the next two years'
+      '+6 EXTRA guaranteed Surprise Boxes during the next two years'
   }
 ];
 
