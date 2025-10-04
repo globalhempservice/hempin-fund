@@ -2,10 +2,10 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import PayErrorNotice from '@/components/fund/PayErrorNotice';
-import TierSlider from '@/components/fund/TierSlider';
 import { createServerClientReadOnly } from '@/lib/supabase/server';
 import CampaignHero from '@/components/fund/CampaignHero';
 import PledgeChooser from '@/components/fund/PledgeChooser';
+import TierList from '@/components/fund/TierList';
 
 type CampaignTotals = {
   campaign_id: string;
@@ -33,24 +33,22 @@ const TIERS: Tier[] = [
   { id: 'cosmos', label: 'Cosmos', amount: 10000, adds: 'Lifetime multipass + priority windows' },
 ];
 
+export default async function LaunchCampaignPage() {
+  const supa = createServerClientReadOnly();
 
-  export default async function LaunchCampaignPage() {
-    const supa = createServerClientReadOnly();
-  
-    // Call RPC without generics; cast after .single() to dodge TS generic mismatch across envs
-    const { data: totalsRaw, error } = await supa
-      .rpc('campaign_totals', { slug: 'hempin-launch' })
-      .single();
-  
-    if (error) console.error('campaign_totals RPC failed', error);
-  
-    const totals  = (totalsRaw as CampaignTotals | null) ?? null;
-    const goal    = Number(totals?.goal ?? 20000);
-    const raised  = Number(totals?.raised ?? 0);
-    const backers = Number(totals?.backers ?? 0);
-    const pct     = Math.min(100, Math.round((raised / goal) * 100));
-  
-    return (
+  // totals from Supabase
+  const { data: totalsRaw, error } = await supa
+    .rpc('campaign_totals', { slug: 'hempin-launch' })
+    .single();
+
+  if (error) console.error('campaign_totals RPC failed', error);
+
+  const totals  = (totalsRaw as CampaignTotals | null) ?? null;
+  const goal    = Number(totals?.goal ?? 20000);
+  const raised  = Number(totals?.raised ?? 0);
+  const backers = Number(totals?.backers ?? 0);
+
+  return (
     <main className="min-h-screen app-shell">
       {/* Stars */}
       <div className="starfield-root" aria-hidden>
@@ -58,40 +56,36 @@ const TIERS: Tier[] = [
         <div className="starfield layer-b" />
       </div>
 
-      <section className="container" style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}>
+      <section
+        className="container"
+        style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}
+      >
         <Suspense fallback={null}>
           <PayErrorNotice />
         </Suspense>
 
-       
-<section className="container" style={{ maxWidth: 980, margin: '0 auto', padding: '18px 16px 28px' }}>
-  <Suspense fallback={null}>
-    <PayErrorNotice />
-  </Suspense>
+        <CampaignHero
+          title="Fund the navigator"
+          subtitle="Help us ship the next modules, keep infra humming, and welcome farms, brands, and researchers into the ecosystem."
+          raised={raised}
+          goal={goal}
+          backers={backers}
+          startISO="2025-10-01"
+          endISO="2025-10-31"
+          live
+        />
 
-  <CampaignHero
-    title="Fund the navigator"
-    subtitle="Help us ship the next modules, keep infra humming, and welcome farms, brands, and researchers into the ecosystem."
-    raised={raised}
-    goal={goal}
-    backers={backers}
-    startISO="2025-10-01"
-    endISO="2025-10-31"
-    live
-  />
-
-  {/* Section 2 — tier slider selector and gamified cards */}
-  <div id="tiers" style={{ marginTop: 16 }}>
-  <h2 className="display-title" style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}>
-    It's your turn to shine
-  </h2>
-  <div className="cta-scanline" aria-hidden />
-  
-  <PledgeChooser campaignSlug="hempin-launch" tiers={TIERS} />
-  </div>
-
-  {/* ... keep the rest (story/FAQ/back link) */}
-</section>
+        {/* Section 2 — slider + rewards (in its own component) */}
+        <div id="tiers" style={{ marginTop: 16 }}>
+          <h2
+            className="display-title"
+            style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}
+          >
+            It&apos;s your turn to shine
+          </h2>
+          <div className="cta-scanline" aria-hidden />
+          <PledgeChooser campaignSlug="hempin-launch" tiers={HEMPIN_TIERS} />
+        </div>
 
         {/* Story / what you enable */}
         <article id="story" className="hemp-panel" style={{ marginTop: 16, padding: 14 }}>
