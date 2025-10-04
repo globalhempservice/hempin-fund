@@ -40,7 +40,7 @@ function resolveRewardImage(perk: string, tierId: Tier['id']): string | null {
     return REWARD_IMG.leaf.limitedTee;
 
   // fiber
-  if (s.includes('guaranteed') && s.includes('box') && s.includes('opening'))
+  if (s.includes('marketplace') && s.includes('box') && s.includes('opening'))
     return REWARD_IMG.fiber.guaranteedBox;
 
   // bast

@@ -42,7 +42,7 @@ export const HEMPIN_TIERS: Tier[] = [
     label: 'Fiber',
     amount: 500,
     adds:
-      'One guaranteed Hemp’in Surprise Box Drop at the marketplace opening'
+      'One Hemp’in Surprise Box Drop at the marketplace opening'
   },
   {
     id: 'bast',
