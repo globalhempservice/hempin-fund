@@ -1,58 +1,70 @@
+// src/components/fund/TierBadge.tsx
 'use client';
 
 import React from 'react';
 
-// keep ids aligned with your page tiers
 export type TierId =
-  | 'seed' | 'sprout' | 'stem' | 'leaf'
-  | 'fiber' | 'bast' | 'core' | 'field' | 'cosmos';
+  | 'seed'
+  | 'sprout'
+  | 'stem'
+  | 'leaf'
+  | 'fiber'
+  | 'bast'
+  | 'core'
+  | 'field'
+  | 'cosmos';
 
-/** Hue per tier (HSL) — tweak to taste */
-const HUES: Record<TierId, number> = {
-  seed:   118,  // green
-  sprout: 96,   // lime
-  stem:   54,   // golden
-  leaf:   162,  // teal
-  fiber:  200,  // sky
-  bast:   258,  // violet
-  core:   292,  // magenta
-  field:  24,   // orange
-  cosmos: 330,  // rose
-};
-
-export default function TierBadge({
-  tierId,
-  size = 28,
-  className,
-  title,
-}: {
+type Props = {
   tierId: TierId;
   size?: number;
-  className?: string;
   title?: string;
-}) {
-  const h = HUES[tierId];
+};
+
+export function TierBadge({ tierId, size = 18, title }: Props) {
+  // Hue pairs for each tier (HSL)
+  const palette: Record<TierId, [number, number]> = {
+    seed:   [140, 160],  // greenish
+    sprout: [150, 180],  // mint → teal
+    stem:   [180, 205],  // teal → cyan
+    leaf:   [200, 220],  // cyan → blue
+    fiber:  [220, 260],  // blue → indigo
+    bast:   [280, 310],  // purple → magenta
+    core:   [320, 350],  // magenta → rose
+    field:  [10,  40],   // orange → amber
+    cosmos: [210, 320],  // cyan → magenta sweep
+  };
+
+  const [h1, h2] = palette[tierId] ?? [330, 210];
+  const px = `${size}px`;
 
   return (
     <span
-      className={className}
+      className="tier-badge"
       title={title}
-      aria-hidden
+      aria-hidden={title ? undefined : true}
       style={{
-        display:'inline-block',
-        width:size,
-        height:size,
-        borderRadius:'50%',
-        // subtle ring + glow
-        border:'1px solid rgba(255,255,255,.28)',
-        boxShadow:'0 0 10px rgba(255,255,255,.18), 0 0 14px hsl(210 80% 65% / .18)',
-        // layered orb look
-        background: `
-          radial-gradient(38% 38% at 38% 35%, #fff 0 36%, rgba(255,255,255,0) 38%),
-          radial-gradient(78% 78% at 70% 70%, hsl(${h} 85% 62% / .55), transparent 62%),
-          radial-gradient(90% 90% at 35% 35%, hsl(${h} 85% 58% / .35), transparent 72%)
-        `,
+        width: px,
+        height: px,
+        borderRadius: '50%',
+        display: 'inline-grid',
+        placeItems: 'center',
+        background: `linear-gradient(135deg, hsl(${h1} 85% 60%) 0%, hsl(${h2} 85% 62%) 100%)`,
+        boxShadow:
+          '0 0 10px rgba(236,72,153,.35), 0 0 14px var(--glow-cyan), inset 0 0 0 1px rgba(255,255,255,.35)',
       }}
-    />
+    >
+      <span
+        style={{
+          width: Math.max(4, Math.round(size / 6)),
+          height: Math.max(4, Math.round(size / 6)),
+          borderRadius: '50%',
+          background: 'rgba(255,255,255,.92)',
+          filter: 'blur(0.2px)',
+        }}
+      />
+    </span>
   );
 }
+
+// Optional default export to be resilient if someone uses `import TierBadge from ...`
+export default TierBadge;
