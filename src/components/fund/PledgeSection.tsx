@@ -4,7 +4,7 @@ import { useState } from 'react';
 import PledgeChooser from './PledgeChooser';
 import RewardsGrid from './RewardsGrid';
 
-type Tier = { id: string; label: string; amount: number; adds?: string };
+export type Tier = { id: string; label: string; amount: number; adds?: string };
 
 export default function PledgeSection({
   campaignSlug,
