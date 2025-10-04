@@ -8,6 +8,7 @@ export const REWARD_IMG = {
     common: {
       allPrev: 'campaigns/hempin-launch/rewards/common/all-previous-kit@2x.v1.webp',
       thankYou: 'campaigns/hempin-launch/rewards/common/thank-you-wall@2x.v1.webp',
+      earlyBacker: 'campaigns/hempin-launch/rewards/common/early-backer-badge@2x.v1.webp',
     },
   
     /** $20 – SEED */

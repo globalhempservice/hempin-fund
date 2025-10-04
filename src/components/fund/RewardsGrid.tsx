@@ -15,8 +15,8 @@ function resolveRewardImage(perk: string, tierId: Tier['id']): string | null {
   const s = perk.toLowerCase();
 
   // universal
-  if (s.includes('all previous')) return REWARD_IMG.common.allPrev;
   if (s.includes('thank you'))    return REWARD_IMG.common.thankYou;
+  if (s.includes('early backer')) return REWARD_IMG.common.earlyBacker;
 
   // seed
   if ((s.includes('surprise') && s.includes('box') && s.includes('raffle')) || s.includes('drop box'))
@@ -76,7 +76,7 @@ export default function RewardsGrid({
   return (
     <section className="hemp-panel reward-wrap" style={{ padding: 16, display:'grid', gap: 12 }}>
       <div>
-        <div className="eyebrow" style={{ marginBottom: 8 }}>NOW UNLOCKED</div>
+        <div className="eyebrow" style={{ marginBottom: 8 }}>YOUR REWARDS</div>
         {/* key on UL re-triggers enter animations when the tier changes */}
         <ul key={`now-${i}`} className="reward-row">
           {nowUnlocked.length === 0 ? (
