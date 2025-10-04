@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import type { Tier } from './PledgeSection';
+import type { Tier } from './PledgeChooser'; // <- fix: import from PledgeChooser
 
 export default function PledgeSlider({
   tiers,
@@ -200,11 +200,9 @@ export default function PledgeSlider({
           position:absolute; inset:0; width:100%; height:32px;
           background:transparent; appearance:none;
         }
-        /* keep the native track invisible so we control visuals with .range-bar */
         .tier-range::-webkit-slider-runnable-track{ height:10px; background:transparent; border:0 }
         .tier-range::-moz-range-track{ height:10px; background:transparent; border:0 }
 
-        /* Thumb centered on 10px track */
         .tier-range::-webkit-slider-thumb{
           appearance:none; width:22px; height:22px; border-radius:50%;
           margin-top:-6px; /* centers on a 10px track */
@@ -221,38 +219,18 @@ export default function PledgeSlider({
 
         .jackpot{ text-shadow: 0 0 18px rgba(236,72,153,.28) }
 
-        /* --- Button shimmer sweep on the primary pledge CTA --- */
-        .shimmer{
-          position: relative;
-          overflow: hidden;
-          isolation: isolate;
-        }
+        /* CTA shimmer */
+        .shimmer{ position:relative; overflow:hidden; isolation:isolate; }
         .shimmer::after{
-          content:"";
-          position:absolute; inset:0 -40% 0 auto; /* start off the right */
-          width: 40%;
-          background: linear-gradient(
-            100deg,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,.24) 45%,
-            rgba(255,255,255,0) 100%
-          );
-          transform: skewX(-18deg) translateX(120%);
-          animation: sheen 2.4s ease-in-out infinite;
-          mix-blend-mode: screen;
-          pointer-events:none;
+          content:""; position:absolute; inset:0 -40% 0 auto; width:40%;
+          background: linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.24) 45%, rgba(255,255,255,0) 100%);
+          transform: skewX(-18deg) translateX(120%); animation: sheen 2.4s ease-in-out infinite;
+          mix-blend-mode: screen; pointer-events:none;
         }
         @keyframes sheen{
-          0%   { transform: skewX(-18deg) translateX(120%); opacity:.0 }
-          10%  { opacity:.9 }
-          45%  { transform: skewX(-18deg) translateX(-160%); opacity:.0 }
-          100% { transform: skewX(-18deg) translateX(-160%); opacity:.0 }
-        }
-        .shimmer:hover{
-          box-shadow:
-            0 0 0 4px rgba(236,72,153,.20),
-            0 10px 22px rgba(0,0,0,.35),
-            0 0 26px rgba(236,72,153,.35);
+          0%{ transform: skewX(-18deg) translateX(120%); opacity:0 }
+          10%{ opacity:.9 }
+          45%,100%{ transform: skewX(-18deg) translateX(-160%); opacity:0 }
         }
 
         @media (prefers-reduced-motion: reduce){
