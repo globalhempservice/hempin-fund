@@ -1,13 +1,10 @@
-// src/app/campaigns/hempin-launch/page.tsx
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import { createServerClientReadOnly } from '@/lib/supabase/server';
 import CampaignHero from '@/components/fund/CampaignHero';
-import PledgeChooser from '@/components/fund/PledgeChooser';
-import { HEMPIN_TIERS } from '@/components/fund/TierList';
 import PledgeSection from '@/components/fund/PledgeSection';
-
+import type { Tier as UITier } from '@/components/fund/PledgeChooser';
 
 type CampaignTotals = {
   campaign_id: string;
@@ -22,7 +19,18 @@ export const metadata: Metadata = {
     "Back Hemp’in’s public launch: build software modules, keep the lights on, and invite the hemp universe in.",
 };
 
-
+// ——— Tiers typed against the UI union (TierId) ———
+const TIERS = [
+  { id: 'seed',   label: 'Seed',   amount: 20,    adds: 'Thank you · Early Backer badge' },
+  { id: 'sprout', label: 'Sprout', amount: 50,    adds: 'Name on the “Founding log”' },
+  { id: 'stem',   label: 'Stem',   amount: 100,   adds: 'Priority invites to early features' },
+  { id: 'leaf',   label: 'Leaf',   amount: 250,   adds: '“Multipass” seasonal digital card' },
+  { id: 'fiber',  label: 'Fiber',  amount: 500,   adds: 'Surprise drop (3–6 months)' },
+  { id: 'bast',   label: 'Bast',   amount: 1000,  adds: 'Founder wall highlight' },
+  { id: 'core',   label: 'Core',   amount: 2500,  adds: 'Founders circle channel + roadmap votes' },
+  { id: 'field',  label: 'Field',  amount: 5000,  adds: 'Custom shout-out (opt-in)' },
+  { id: 'cosmos', label: 'Cosmos', amount: 10000, adds: 'Lifetime multipass + priority windows' },
+] satisfies UITier[];
 
 export default async function LaunchCampaignPage() {
   const supa = createServerClientReadOnly();
@@ -56,8 +64,8 @@ export default async function LaunchCampaignPage() {
         </Suspense>
 
         <CampaignHero
-          title="Fund the upcoming Hemp Supermarket and win hemp products"
-          subtitle="Help us finalize the largest global Hemp products Supermarket, keep infra humming, and welcome farms, brands, and researchers into the ecosystem."
+          title="Fund the navigator"
+          subtitle="Help us ship the next modules, keep infra humming, and welcome farms, brands, and researchers into the ecosystem."
           raised={raised}
           goal={goal}
           backers={backers}
@@ -66,19 +74,18 @@ export default async function LaunchCampaignPage() {
           live
         />
 
-        {/* Section 2 — slider + rewards (in its own component) */}
+        {/* Section 2 — slider + rewards (PledgeSection comp) */}
         <div id="tiers" style={{ marginTop: 16 }}>
-  <h2
-    className="display-title"
-    style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}
-  >
-    It&apos;s your turn to shine
-  </h2>
-  <div className="cta-scanline" aria-hidden />
+          <h2
+            className="display-title"
+            style={{ textAlign: 'center', fontSize: 'clamp(22px,3.6vw,32px)' }}
+          >
+            It&apos;s your turn to shine
+          </h2>
+          <div className="cta-scanline" aria-hidden />
 
-  {/* Wrapped: selector + rewards, synced */}
-  <PledgeSection campaignSlug="hempin-launch" tiers={HEMPIN_TIERS} />
-</div>
+          <PledgeSection campaignSlug="hempin-launch" tiers={TIERS} />
+        </div>
 
         {/* Story / what you enable */}
         <article id="story" className="hemp-panel" style={{ marginTop: 16, padding: 14 }}>
@@ -127,9 +134,4 @@ export default async function LaunchCampaignPage() {
       </section>
     </main>
   );
-}
-
-/* ---------- utils ---------- */
-function format(n: number) {
-  try { return Number(n).toLocaleString('en-US'); } catch { return String(n); }
 }

@@ -1,10 +1,9 @@
+// src/components/fund/PledgeSection.tsx
 'use client';
 
 import { useState } from 'react';
-import PledgeChooser from './PledgeChooser';
+import PledgeChooser, { type Tier } from './PledgeChooser';
 import RewardsGrid from './RewardsGrid';
-
-export type Tier = { id: string; label: string; amount: number; adds?: string };
 
 export default function PledgeSection({
   campaignSlug,
@@ -12,7 +11,7 @@ export default function PledgeSection({
   defaultIndex = 0,
 }: {
   campaignSlug: string;
-  tiers: Tier[];
+  tiers: Tier[];            // <-- use Tier from PledgeChooser
   defaultIndex?: number;
 }) {
   const [i, setI] = useState(
