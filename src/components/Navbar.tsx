@@ -208,12 +208,6 @@ function UserMenu({ email }: { email: string }) {
           <a className="block px-3 py-2 text-sm hover:bg-white/10" href="/me">
             My pledges
           </a>
-          <a className="block px-3 py-2 text-sm hover:bg-white/10" href="https://wallet.hempin.org">
-            Wallet
-          </a>
-          <a className="block px-3 py-2 text-sm hover:bg-white/10" href="https://account.hempin.org/profile/edit">
-            Edit profile
-          </a>
           <a className="block px-3 py-2 text-sm hover:bg-white/10" href="/logout">
             Log out
           </a>
