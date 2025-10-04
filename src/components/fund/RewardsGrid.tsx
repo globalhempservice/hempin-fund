@@ -14,6 +14,7 @@ function splitAdds(t: Tier) {
 function resolveRewardImage(perk: string, tierId: Tier['id']): string | null {
   const s = perk.toLowerCase();
 
+  // universal
  
 
   // seed
@@ -21,6 +22,9 @@ function resolveRewardImage(perk: string, tierId: Tier['id']): string | null {
     return REWARD_IMG.seed.raffle;
   if (s.includes('random') && s.includes('sticker'))
     return REWARD_IMG.seed.sticker;
+  if (s.includes('early backer'))
+    return REWARD_IMG.seed.earlyBacker;
+  if (s.includes('thank you'))    return REWARD_IMG.common.thankYou;
 
   // sprout
   if (s.includes('sticker') && s.includes('collection'))

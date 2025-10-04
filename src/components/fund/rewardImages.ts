@@ -7,7 +7,7 @@ export const REWARD_IMG = {
     /** universal campaign visuals **/
     common: {
       allPrev: 'campaigns/hempin-launch/rewards/common/all-previous-kit@2x.v1.webp',
-      thankYou: 'campaigns/hempin-launch/rewards/common/thank-you-wall@2x.v1.webp',
+      
       
     },
   
@@ -15,7 +15,8 @@ export const REWARD_IMG = {
     seed: {
       raffle: 'campaigns/hempin-launch/rewards/seed/surprise-box-raffle@2x.v1.webp',
       sticker: 'campaigns/hempin-launch/rewards/seed/random-sticker@2x.v1.webp',
-      earlyBacker: 'campaigns/hempin-launch/rewards/common/early-backer-badge@2x.v2.webp',
+      earlyBacker: 'campaigns/hempin-launch/rewards/seed/early-backer-badge@2x.v2.webp',
+      thankYou: 'campaigns/hempin-launch/rewards/common/thank-you-wall@2x.v1.webp',
     },
   
     /** $50 – SPROUT */
