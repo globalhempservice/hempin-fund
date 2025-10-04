@@ -5,7 +5,7 @@ import PayErrorNotice from '@/components/fund/PayErrorNotice';
 import { createServerClientReadOnly } from '@/lib/supabase/server';
 import CampaignHero from '@/components/fund/CampaignHero';
 import PledgeChooser from '@/components/fund/PledgeChooser';
-import TierList from '@/components/fund/TierList';
+import {HEMPIN_TIERS } from '@/components/fund/TierList';
 
 type CampaignTotals = {
   campaign_id: string;
@@ -20,18 +20,7 @@ export const metadata: Metadata = {
     "Back Hemp’in’s public launch: build software modules, keep the lights on, and invite the hemp universe in.",
 };
 
-type Tier = { id: string; label: string; amount: number; adds?: string };
-const TIERS: Tier[] = [
-  { id: 'seed',   label: 'Seed',   amount: 20,    adds: 'Thank you · Early Backer badge' },
-  { id: 'sprout', label: 'Sprout', amount: 50,    adds: 'Name on the “Founding log”' },
-  { id: 'stem',   label: 'Stem',   amount: 100,   adds: 'Priority invites to early features' },
-  { id: 'leaf',   label: 'Leaf',   amount: 250,   adds: '“Multipass” seasonal digital card' },
-  { id: 'fiber',  label: 'Fiber',  amount: 500,   adds: 'Surprise drop (3–6 months)' },
-  { id: 'bast',   label: 'Bast',   amount: 1000,  adds: 'Founder wall highlight' },
-  { id: 'core',   label: 'Core',   amount: 2500,  adds: 'Founders circle channel + roadmap votes' },
-  { id: 'field',  label: 'Field',  amount: 5000,  adds: 'Custom shout-out (opt-in)' },
-  { id: 'cosmos', label: 'Cosmos', amount: 10000, adds: 'Lifetime multipass + priority windows' },
-];
+
 
 export default async function LaunchCampaignPage() {
   const supa = createServerClientReadOnly();
