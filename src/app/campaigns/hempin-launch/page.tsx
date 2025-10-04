@@ -56,8 +56,8 @@ export default async function LaunchCampaignPage() {
         </Suspense>
 
         <CampaignHero
-          title="Fund the navigator"
-          subtitle="Help us ship the next modules, keep infra humming, and welcome farms, brands, and researchers into the ecosystem."
+          title="Fund the upcoming Hemp Supermarket and win hemp products"
+          subtitle="Help us finalize the largest global Hemp products Supermarket, keep infra humming, and welcome farms, brands, and researchers into the ecosystem."
           raised={raised}
           goal={goal}
           backers={backers}
