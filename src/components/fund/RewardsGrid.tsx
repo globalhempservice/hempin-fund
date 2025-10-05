@@ -91,7 +91,7 @@ function resolveRewardMeta(perk: string, tierId: Tier['id']): { src: string | nu
     // keeping image key "tenBoxes" per your note
     return {
       src: publicUrl(REWARD_IMG.core.tenBoxes),
-      subtitle: 'The ultimate trust and friend, you know Hemp potential and you will get the best of what hemp can offer!',
+      subtitle: 'The ultimate trust and friend, you know Hemp potential and you will get the best of what hemp can offer! A total of 10 boxes for you, a hundred raffle tickets and all the prizes of all the previous tiers, we are eternaly grateful for your support',
     };
   }
 

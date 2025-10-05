@@ -20,7 +20,7 @@ export default async function PayHempinLaunchPage({
     leaf:          { label: 'Leaf',             amount: 250 },
     fiber:         { label: 'Fiber',            amount: 500 },
     bast:          { label: 'Bast',             amount: 1000 },
-    core:          { label: 'Core',             amount: 2500 },
+    core:          { label: 'Core',             amount: 2000 },
     field:         { label: 'Field',            amount: 5000 },
     cosmos:        { label: 'Cosmos',           amount: 10000 },
   };
