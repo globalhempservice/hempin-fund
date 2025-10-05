@@ -131,18 +131,32 @@ export default function FundHome() {
       </section>
 
       {/* Footer */}
-      <footer className="site-footer">
-        <div className="container row">
-          <span className="muted tiny">© {new Date().getFullYear()} Hemp’in</span>
-          <nav className="tiny">
-            <a className="muted" href="https://www.hempin.org/about">About</a>
-            <span className="muted" style={{ margin: '0 8px' }}>·</span>
-            <a className="muted" href="/work">WORK</a>
-            <span className="muted" style={{ margin: '0 8px' }}>·</span>
-            <a className="muted" href="https://www.hempin.org/trust">Trust Center / policy & Data</a>
-          </nav>
-        </div>
-      </footer>
+<footer className="site-footer">
+  <div className="container row">
+    <span className="muted tiny">© {new Date().getFullYear()} Hemp’in</span>
+    <nav className="tiny">
+      <a
+        className="muted"
+        href="https://www.hempin.org/about"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        About
+      </a>
+      <span className="muted" style={{ margin: '0 8px' }}>·</span>
+      <a className="muted" href="/work">WORK</a>
+      <span className="muted" style={{ margin: '0 8px' }}>·</span>
+      <a
+        className="muted"
+        href="https://www.hempin.org/trust"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Trust Center / Policy & Data
+      </a>
+    </nav>
+  </div>
+</footer>
     </>
   );
 }
