@@ -78,6 +78,7 @@ export default function Navbar() {
         <nav className="nav-list">
           <a href="/campaigns/hempin-launch">Featured — Hemp’in Launch</a>
           <a href="/work">WORK — Submit your campaign</a>
+          <a href="https://www.hempin.org/trust" target="_blank" rel="noopener noreferrer">Trust Center / policy & Data ↗</a>
           <a href="https://admin.hempin.org" target="_blank" rel="noopener noreferrer">Admin Console ↗</a>
         </nav>
       </aside>
