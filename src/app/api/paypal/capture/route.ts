@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server'
 import { createServerClientSupabase } from '@/lib/supabase/server'
 
-const PAYPAL_API_BASE = 'https://api-m.sandbox.paypal.com'
+
+const ENV = (process.env.NEXT_PUBLIC_PAYPAL_ENV || 'sandbox').toLowerCase();
+const PAYPAL_API_BASE =
+  ENV === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
 
 async function getPayPalAccessToken() {
   const clientId = process.env.PAYPAL_CLIENT_ID
