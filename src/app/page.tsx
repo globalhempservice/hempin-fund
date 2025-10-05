@@ -21,7 +21,7 @@ export default function FundHome() {
   href="/campaigns/hempin-launch"
   cta="Open campaign page"
   status="live"
-  image={{ src: '/images/hempin-launch.jpg', alt: 'Hemp’in Launch banner' }}
+  image={{ src: '/images/hempin-launch-banner.jpg', alt: 'Hemp’in Launch banner' }}
   meta={['Oct 1 → Oct 31']}
 />
       
