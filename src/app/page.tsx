@@ -135,11 +135,11 @@ export default function FundHome() {
         <div className="container row">
           <span className="muted tiny">© {new Date().getFullYear()} Hemp’in</span>
           <nav className="tiny">
-            <a className="muted" href="/about">About</a>
+            <a className="muted" href="https://www.hempin.org/about">About</a>
             <span className="muted" style={{ margin: '0 8px' }}>·</span>
             <a className="muted" href="/work">WORK</a>
             <span className="muted" style={{ margin: '0 8px' }}>·</span>
-            <a className="muted" href="/campaigns/hempin-launch">Hemp’in Launch</a>
+            <a className="muted" href="https://www.hempin.org/trust">Trust Center / policy & Data</a>
           </nav>
         </div>
       </footer>
