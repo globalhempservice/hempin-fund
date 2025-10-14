@@ -1,4 +1,4 @@
-import VisionThreeClient from '@/components/slides/VisionThreeClient';
+import VisionThreeClient from './VisionThreeClient';
 
 export const metadata = {
   title: 'Hemp’in — Vision (3/3)',
