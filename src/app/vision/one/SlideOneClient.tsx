@@ -25,7 +25,7 @@ export default function SlideOneClient() {
 
         {/* Body */}
         <div className="grid grid-cols-2 gap-8 items-stretch mt-6">
-          {/* Left column */}
+          {/* Left column (unchanged) */}
           <motion.section
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -55,7 +55,7 @@ export default function SlideOneClient() {
             </div>
           </motion.section>
 
-          {/* Right: System diagram */}
+          {/* Right: System diagram (fixed to interlace) */}
           <motion.section
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -73,25 +73,34 @@ export default function SlideOneClient() {
             {/* Stage */}
             <div className="relative h-full grid place-items-center p-10">
               <motion.div
-                initial={{ scale: 0.85, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.7, ease: 'easeOut' }}
-                className="relative h-[440px] w-[440px] rounded-full border border-white/15 bg-black/30"
+                transition={{ delay: 0.55, duration: 0.7, ease: 'easeOut' }}
+                className="relative h-[460px] w-[460px]"
               >
+                {/* Outer disc for overlap context */}
+                <div className="absolute inset-0 rounded-full bg-black/30 border border-white/15" />
+
+                {/* Inner glow ring to match earlier look */}
+                <div className="absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full
+                                border border-cyan-300/35 shadow-[0_0_60px_rgba(56,189,248,.25)]" />
+
                 {/* Core */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-40 rounded-full grid place-items-center border border-cyan-300/40 bg-cyan-400/10 shadow-[0_0_42px_rgba(56,189,248,.35)]">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[170px] w-[170px]
+                                rounded-full grid place-items-center border border-cyan-300/40 bg-cyan-400/10
+                                shadow-[0_0_42px_rgba(56,189,248,.35)]">
                   <div className="text-center leading-tight">
                     <div className="text-sm tracking-wide opacity-90">Hemp’in</div>
                     <div className="text-xs opacity-70">Core</div>
                   </div>
                 </div>
 
-                {/* Orbiting apps — positioned from center with pixel offsets */}
-                <Orb label="Knowledge" dx={-150} dy={-20} hue="cyan" href="https://knowledge.hempin.org" />
-                <Orb label="Fund"      dx={ 150} dy={-15} hue="rose"  href="https://fund.hempin.org" />
-                <Orb label="Market"    dx={-115} dy={ 155} hue="emerald" />
-                <Orb label="Places"    dx={ 115} dy={ 155} hue="violet" />
-                <Orb label="Account"   dx={   0} dy={-175} hue="amber"  href="https://account.hempin.org" />
+                {/* Orbiting apps — centered pixel offsets, sized to overlap ring nicely */}
+                <Orb label="Account"  hue="amber"   dx={   0} dy={-200} size={112} href="https://account.hempin.org" />
+                <Orb label="Fund"     hue="rose"    dx={ 170} dy={ -10} size={112} href="https://fund.hempin.org" />
+                <Orb label="Places"   hue="violet"  dx={ 130} dy={ 170} size={112} />
+                <Orb label="Market"   hue="emerald" dx={-130} dy={ 170} size={112} />
+                <Orb label="Knowledge"hue="cyan"    dx={-170} dy={ -15} size={112} href="https://knowledge.hempin.org" />
               </motion.div>
             </div>
           </motion.section>
@@ -135,12 +144,14 @@ function Orb({
   dx,
   dy,
   hue,
+  size = 110,
   href,
 }: {
   label: string;
-  dx: number; // pixel offset from center (x)
-  dy: number; // pixel offset from center (y)
+  dx: number;  // px from center (x)
+  dy: number;  // px from center (y)
   hue: 'cyan' | 'rose' | 'emerald' | 'violet' | 'amber';
+  size?: number;
   href?: string;
 }) {
   const color = {
@@ -152,17 +163,21 @@ function Orb({
   }[hue];
 
   const Tag: any = href ? 'a' : 'div';
-
   return (
     <Tag
       href={href}
       target={href ? '_blank' : undefined}
       rel={href ? 'noopener noreferrer' : undefined}
-      className={`absolute h-24 w-24 rounded-full grid place-items-center border ${color}`}
+      className={`absolute rounded-full grid place-items-center border ${color}`}
       style={{
+        width: size,
+        height: size,
         left: '50%',
         top: '50%',
         transform: `translate(-50%, -50%) translate(${dx}px, ${dy}px)`,
+        // subtle overlap vibe
+        backgroundClip: 'padding-box',
+        mixBlendMode: 'screen',
       }}
     >
       <span className="text-[11px] opacity-90">{label}</span>
