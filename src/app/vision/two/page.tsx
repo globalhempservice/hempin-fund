@@ -55,6 +55,24 @@ export default function SlideTwo() {
               <li>• Co-design pilots: measure impact, publish results, scale.</li>
             </ul>
 
+{/* Quick demos */}
+<div className="grid grid-cols-2 gap-3 pt-2">
+  <a
+    href="https://fund.hempin.org/research"
+    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs hover:border-white/20 hover:bg-white/7 transition"
+  >
+    Fund demo → <span className="opacity-70">pledges & campaigns</span>
+  </a>
+  <a
+    href="https://knowledge.hempin.org"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs hover:border-white/20 hover:bg-white/7 transition"
+  >
+    Knowledge demo ↗ <span className="opacity-70">ask + sources</span>
+  </a>
+</div>
+
             <div className="pt-2 text-sm opacity-90">
               Contact: <a className="underline" href="mailto:info@globalhempservice.com">info@globalhempservice.com</a>
               <span className="opacity-50"> • </span>

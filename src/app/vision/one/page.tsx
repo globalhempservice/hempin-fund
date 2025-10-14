@@ -69,6 +69,42 @@ export default function SlideOne() {
           </section>
         </div>
 
+        {/* Deep links into live demos / docs */}
+<div className="grid grid-cols-2 gap-3 mt-3">
+  <a
+    href="https://auth.hempin.org"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs hover:border-white/20 hover:bg-white/7 transition"
+  >
+    Auth hub ↗ <span className="opacity-70">SSO</span>
+  </a>
+  <a
+    href="https://admin.hempin.org"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs hover:border-white/20 hover:bg-white/7 transition"
+  >
+    Admin console ↗ <span className="opacity-70">roles · RLS</span>
+  </a>
+  <a
+    href="https://knowledge.hempin.org"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs hover:border-white/20 hover:bg-white/7 transition col-span-2"
+  >
+    Knowledge ↗ <span className="opacity-70">RAG + FAQ cache</span>
+  </a>
+  <a
+    href="https://hempin.org/trust"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs hover:border-white/20 hover:bg-white/7 transition col-span-2"
+  >
+    Trust Center ↗ <span className="opacity-70">Vision · Investor</span>
+  </a>
+</div>
+
         {/* Footer */}
         <footer className="flex items-center justify-between pt-3">
           <div className="text-xs opacity-80">hempin.org • shared identity • shared data • shared intelligence</div>
