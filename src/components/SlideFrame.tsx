@@ -1,15 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type SlideFrameProps = {
   children: React.ReactNode;
   title?: string;
-  /** Where “Share / Email” should point (usually the first slide). */
-  firstSlidePath?: string; // e.g. "/vision/one"
-  /** Optional: override the slide canvas size if you ever want a different ratio */
-  width?: number;  // default 1280
-  height?: number; // default 800
+  firstSlidePath?: string; // where Share/Email should point (usually /vision/one)
+  width?: number;  // fixed canvas width (default 1280)
+  height?: number; // fixed canvas height (default 800)
 };
 
 export default function SlideFrame({
@@ -19,83 +17,84 @@ export default function SlideFrame({
   width = 1280,
   height = 800,
 }: SlideFrameProps) {
-  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const [wrapH, setWrapH] = useState<number | null>(null);
   const [scale, setScale] = useState(1);
 
-  // compute absolute URL for sharing/email
-  const absFirstUrl =
-    typeof window === 'undefined'
-      ? firstSlidePath
-      : new URL(firstSlidePath, window.location.origin).toString();
+  // absolute URL for share/email
+  const absFirstUrl = useMemo(() => {
+    if (typeof window === 'undefined') return firstSlidePath;
+    return new URL(firstSlidePath, window.location.origin).toString();
+  }, [firstSlidePath]);
 
-  // Scale the fixed canvas to the *wrapper* box (which sits under the navbar)
+  // Measure available vertical space under the control bar, then compute scale.
   useEffect(() => {
     const measure = () => {
-      const el = wrapRef.current;
-      if (!el) return;
-      const { width: vw, height: vh } = el.getBoundingClientRect();
-      const s = Math.min(vw / width, vh / height);
-      setScale(s);
+      const viewportH =
+        (window as any).visualViewport?.height ?? window.innerHeight;
+
+      const shellTop = shellRef.current?.getBoundingClientRect().top ?? 0;
+      const barH = barRef.current?.getBoundingClientRect().height ?? 0;
+
+      // space below the control bar, with a tiny breathing room
+      const availableH = Math.max(0, viewportH - shellTop - barH - 24);
+
+      setWrapH(availableH);
+      const wrapW = shellRef.current?.clientWidth ?? window.innerWidth;
+      const s = Math.min(wrapW / width, availableH / height);
+      setScale(Number.isFinite(s) ? Math.max(0.2, s) : 1);
     };
+
     measure();
     const ro = new ResizeObserver(measure);
-    if (wrapRef.current) ro.observe(wrapRef.current);
+    if (shellRef.current) ro.observe(shellRef.current);
+    if (barRef.current) ro.observe(barRef.current);
     window.addEventListener('resize', measure);
+    (window as any).visualViewport?.addEventListener('resize', measure);
+
     return () => {
       ro.disconnect();
       window.removeEventListener('resize', measure);
+      (window as any).visualViewport?.removeEventListener('resize', measure);
     };
   }, [width, height]);
 
   const onShare = async () => {
     try {
       if (navigator.share) {
-        await navigator.share({
-          title,
-          text: 'Hemp’in — Vision deck',
-          url: absFirstUrl,
-        });
+        await navigator.share({ title, text: 'Hemp’in — Vision deck', url: absFirstUrl });
       } else {
         await navigator.clipboard.writeText(absFirstUrl);
         alert('Link copied to clipboard');
       }
-    } catch {
-      // user cancelled — ignore
-    }
+    } catch {/* user cancelled */}
   };
 
   const onEmail = () => {
     const subject = encodeURIComponent('Hemp’in — Vision deck');
-    const body = encodeURIComponent(
-      `Here’s the Hemp’in vision deck:\n\n${absFirstUrl}\n\n`
-    );
+    const body = encodeURIComponent(`Here’s the Hemp’in vision deck:\n\n${absFirstUrl}\n\n`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
   return (
-    <section
-      className="
-        w-full
-        bg-[#0a0f16]
-        text-slate-100
-        print:bg-white
-      "
-    >
-      {/* Float the slide under your navbar with breathing room */}
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 pt-8 pb-10">
-        {/* Top control bar (not fixed; sits under the site navbar) */}
-        <div className="
-            mb-4 flex flex-wrap items-center justify-center gap-2
-            rounded-full border border-white/10 bg-white/10 px-2.5 py-1.5
-            backdrop-blur print:hidden
-          ">
+    <section className="w-full bg-[#0a0f16] text-slate-100 print:bg-white">
+      <div
+        ref={shellRef}
+        className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 pt-6 pb-8"
+      >
+        {/* Control bar (sits under site navbar) */}
+        <div
+          ref={barRef}
+          className="mb-4 flex flex-wrap items-center justify-center gap-2 rounded-full border border-white/10 bg-white/10 px-2.5 py-1.5 backdrop-blur print:hidden"
+        >
           <span className="text-xs opacity-80 px-2">{title}</span>
           <span className="opacity-30 hidden sm:inline">•</span>
           <button
             onClick={() => window.print()}
             className="text-xs font-semibold hover:opacity-90 px-2"
-            aria-label="Download PDF"
             title="Download PDF"
+            aria-label="Download PDF"
           >
             Download PDF
           </button>
@@ -103,8 +102,8 @@ export default function SlideFrame({
           <button
             onClick={onShare}
             className="text-xs font-semibold hover:opacity-90 px-2"
-            aria-label="Share link"
             title="Share link"
+            aria-label="Share link"
           >
             Share
           </button>
@@ -112,24 +111,19 @@ export default function SlideFrame({
           <button
             onClick={onEmail}
             className="text-xs font-semibold hover:opacity-90 px-2"
-            aria-label="Email this presentation"
             title="Email this presentation"
+            aria-label="Email this presentation"
           >
             Email
           </button>
         </div>
 
-        {/* Scaling wrapper box (fills the available height under navbar) */}
+        {/* Wrapper fills the measured space; no page scroll needed */}
         <div
-          ref={wrapRef}
-          className="
-            relative
-            h-[calc(100vh-160px)]  // fits below navbar with extra breathing room
-            min-h-[560px]          // reasonable minimum for laptops
-            grid place-items-center
-          "
+          className="relative grid place-items-center overflow-hidden"
+          style={{ height: wrapH ?? '60dvh' }}
         >
-          {/* The fixed-ratio slide canvas */}
+          {/* Fixed-ratio slide canvas, scaled to fit */}
           <div
             className="shadow-[0_0_60px_rgba(56,189,248,.15)] print:shadow-none"
             style={{

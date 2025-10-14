@@ -44,7 +44,7 @@ export default function VisionZeroClient() {
           {/* Buttons */}
           <div className="flex items-center justify-center gap-4 mt-8">
             <Link
-              href="/vision/one"
+              href="https://hempin.org/vision/one"
               className="px-4 py-2 rounded-full text-sm font-medium border border-white/20 bg-white/10 hover:bg-white/20 transition"
             >
               Begin Presentation →
