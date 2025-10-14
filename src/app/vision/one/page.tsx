@@ -11,17 +11,22 @@ export default function SlideOne() {
     <SlideFrame title="Hemp’in — Vision (1/2)">
       <div className="h-full w-full p-10 grid grid-rows-[auto_1fr_auto]">
         {/* Header */}
-        <header className="flex flex-col items-center justify-center text-center">
+        <header className="flex items-center justify-between">
+          <Link href="/vision/zero" className="text-sm opacity-80 hover:opacity-100 transition">
+            ← Back
+          </Link>
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="text-2xl font-semibold tracking-tight relative inline-block"
+            className="text-2xl font-semibold tracking-tight text-center relative inline-block"
           >
             Hemp’in — Building the Living OS for a Regenerative World
             <span className="absolute left-1/2 -bottom-2 h-[2px] w-40 -translate-x-1/2 bg-gradient-to-r from-emerald-400 via-cyan-400 to-rose-400 blur-sm opacity-80"></span>
           </motion.h1>
-          <Link href="/vision/two" className="mt-3 text-sm opacity-80 hover:opacity-100 transition">Next →</Link>
+          <Link href="/vision/two" className="text-sm opacity-80 hover:opacity-100 transition">
+            Next →
+          </Link>
         </header>
 
         {/* Body */}
@@ -72,10 +77,18 @@ export default function SlideOne() {
           >
             <div className="absolute inset-0 opacity-[.85]">
               {/* Soft aurora */}
-              <div className="absolute -top-16 -left-20 w-[520px] h-[520px] rounded-full blur-3xl"
-                   style={{ background: 'radial-gradient(circle, rgba(16,185,129,.28), transparent 60%)' }} />
-              <div className="absolute -bottom-20 -right-16 w-[520px] h-[520px] rounded-full blur-3xl"
-                   style={{ background: 'radial-gradient(circle, rgba(236,72,153,.28), transparent 60%)' }} />
+              <div
+                className="absolute -top-16 -left-20 w-[520px] h-[520px] rounded-full blur-3xl"
+                style={{
+                  background: 'radial-gradient(circle, rgba(16,185,129,.28), transparent 60%)',
+                }}
+              />
+              <div
+                className="absolute -bottom-20 -right-16 w-[520px] h-[520px] rounded-full blur-3xl"
+                style={{
+                  background: 'radial-gradient(circle, rgba(236,72,153,.28), transparent 60%)',
+                }}
+              />
             </div>
 
             <div className="relative h-full grid place-items-center p-10">
@@ -94,10 +107,10 @@ export default function SlideOne() {
 
                 {/* Orbiting apps */}
                 <Orb label="Knowledge" x="-52%" y="-6%" hue="cyan" href="https://knowledge.hempin.org" />
-                <Orb label="Fund"      x="56%"  y="-4%" hue="rose"  href="https://fund.hempin.org" />
-                <Orb label="Market"    x="-44%" y="64%" hue="emerald" href="#" />
-                <Orb label="Places"    x="48%"  y="64%" hue="violet" href="#" />
-                <Orb label="Account"   x="0%"   y="-64%" hue="amber"  href="https://account.hempin.org" />
+                <Orb label="Fund" x="56%" y="-4%" hue="rose" href="https://fund.hempin.org" />
+                <Orb label="Market" x="-44%" y="64%" hue="emerald" href="#" />
+                <Orb label="Places" x="48%" y="64%" hue="violet" href="#" />
+                <Orb label="Account" x="0%" y="-64%" hue="amber" href="https://account.hempin.org" />
               </motion.div>
             </div>
           </motion.section>
@@ -105,7 +118,9 @@ export default function SlideOne() {
 
         {/* Footer */}
         <footer className="flex items-center justify-between pt-3">
-          <div className="text-xs opacity-80">hempin.org • shared identity • shared data • shared intelligence</div>
+          <div className="text-xs opacity-80">
+            hempin.org • shared identity • shared data • shared intelligence
+          </div>
           <div className="text-xs opacity-70">Slide 1 / 2</div>
         </footer>
       </div>
@@ -115,7 +130,15 @@ export default function SlideOne() {
 
 /* Components */
 
-function CardLink({ href, children, className = '' }: { href: string; children: React.ReactNode; className?: string }) {
+function CardLink({
+  href,
+  children,
+  className = '',
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <a
       href={href}
@@ -141,19 +164,21 @@ function Orb({
   hue: 'cyan' | 'rose' | 'emerald' | 'violet' | 'amber';
   href?: string;
 }) {
-  const color = {
-    cyan: 'shadow-[0_0_30px_rgba(56,189,248,.35)] border-cyan-300/40 bg-cyan-400/10',
-    rose: 'shadow-[0_0_30px_rgba(244,63,94,.35)] border-rose-300/40 bg-rose-400/10',
-    emerald: 'shadow-[0_0_30px_rgba(16,185,129,.35)] border-emerald-300/40 bg-emerald-400/10',
-    violet: 'shadow-[0_0_30px_rgba(139,92,246,.35)] border-violet-300/40 bg-violet-400/10',
-    amber: 'shadow-[0_0_30px_rgba(245,158,11,.35)] border-amber-300/40 bg-amber-400/10',
-  }[hue];
+  const color =
+    {
+      cyan: 'shadow-[0_0_30px_rgba(56,189,248,.35)] border-cyan-300/40 bg-cyan-400/10',
+      rose: 'shadow-[0_0_30px_rgba(244,63,94,.35)] border-rose-300/40 bg-rose-400/10',
+      emerald: 'shadow-[0_0_30px_rgba(16,185,129,.35)] border-emerald-300/40 bg-emerald-400/10',
+      violet: 'shadow-[0_0_30px_rgba(139,92,246,.35)] border-violet-300/40 bg-violet-400/10',
+      amber: 'shadow-[0_0_30px_rgba(245,158,11,.35)] border-amber-300/40 bg-amber-400/10',
+    }[hue];
 
-  const C = href ? 'a' : 'div';
+  const MotionTag = motion(href ? 'a' : 'div'); // ✅ Correct dynamic motion tag
   return (
-    // @ts-ignore
-    <motion[C]
+    <MotionTag
       href={href}
+      target={href ? '_blank' : undefined}
+      rel={href ? 'noopener noreferrer' : undefined}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.7, ease: 'easeOut', delay: 0.8 }}
@@ -161,6 +186,6 @@ function Orb({
       style={{ transform: `translate(${x}, ${y})` }}
     >
       <span className="text-[11px] opacity-90">{label}</span>
-    </motion[C]>
+    </MotionTag>
   );
 }
