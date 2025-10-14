@@ -8,9 +8,9 @@ export default function VisionZeroClient() {
   return (
     <SlideFrame title="Hemp’in — Vision Zero">
       <div className="relative h-full w-full overflow-hidden grid place-items-center">
-        {/* Animated background gradients */}
+        {/* Animated background gradients — behind & non-interactive */}
         <motion.div
-          className="absolute inset-0"
+          className="absolute inset-0 -z-10 pointer-events-none"
           animate={{ backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'] }}
           transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
           style={{
@@ -20,19 +20,19 @@ export default function VisionZeroClient() {
           }}
         />
 
-        {/* Centerpiece */}
+        {/* Centerpiece — above everything */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          className="relative text-center"
+          className="relative z-10 text-center"
         >
           <motion.div
-            className="absolute -inset-10 blur-3xl bg-gradient-to-r from-emerald-400/20 via-cyan-400/20 to-rose-400/20 rounded-full"
+            className="absolute -inset-10 blur-3xl bg-gradient-to-r from-emerald-400/20 via-cyan-400/20 to-rose-400/20 rounded-full pointer-events-none -z-10"
             animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.05, 1] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           />
-          <h1 className="text-4xl md:text-6xl font-semibold relative z-10">
+          <h1 className="text-4xl md:text-6xl font-semibold">
             <span className="bg-gradient-to-r from-emerald-300 via-cyan-300 to-rose-300 bg-clip-text text-transparent">
               Hemp’in
             </span>
@@ -42,9 +42,9 @@ export default function VisionZeroClient() {
           </p>
 
           {/* Buttons */}
-          <div className="flex items-center justify-center gap-4 mt-8">
+          <div className="flex items-center justify-center gap-4 mt-8 z-20">
             <Link
-              href="https://hempin.org/vision/one"
+              href="/vision/one"
               className="px-4 py-2 rounded-full text-sm font-medium border border-white/20 bg-white/10 hover:bg-white/20 transition"
             >
               Begin Presentation →
@@ -60,11 +60,11 @@ export default function VisionZeroClient() {
           </div>
         </motion.div>
 
-        {/* Floating orbs */}
+        {/* Floating orbs — behind & non-interactive */}
         {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 rounded-full bg-cyan-300/40"
+            className="absolute w-2 h-2 rounded-full bg-cyan-300/40 pointer-events-none -z-10"
             initial={{
               x: Math.random() * 1200 - 600,
               y: Math.random() * 800 - 400,
