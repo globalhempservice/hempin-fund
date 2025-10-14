@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 type SlideFrameProps = {
   children: React.ReactNode;
-  title?: string;
-  width?: number;
-  height?: number;
+  title?: string;       // unused visually, but kept for future
+  width?: number;       // slide logical width
+  height?: number;      // slide logical height
 };
 
 export default function SlideFrame({
@@ -15,54 +15,75 @@ export default function SlideFrame({
   width = 1280,
   height = 800,
 }: SlideFrameProps) {
-  const shellRef = useRef<HTMLDivElement | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const roRef = useRef<ResizeObserver | null>(null);
+  const rafRef = useRef<number | null>(null);
   const [scale, setScale] = useState(1);
 
-  // Recalculate scale based on viewport
   useEffect(() => {
     const measure = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      if (!wrapRef.current) return;
+      const rect = wrapRef.current.getBoundingClientRect();
 
-      // Leave a small breathing margin top/bottom (10%)
-      const margin = vh * 0.1;
-      const usableH = vh - margin * 2;
+      // leave a small breathing margin vertically
+      const margin = rect.height * 0.08; // 8%
+      const usableH = Math.max(0, rect.height - margin * 2);
+      const usableW = rect.width;
 
-      const s = Math.min(vw / width, usableH / height);
-      setScale(s);
+      const s = Math.min(usableW / width, usableH / height);
+
+      // round to 3 decimals to avoid micro reflows (causes flicker)
+      const rounded = Math.max(0.2, Math.round(s * 1000) / 1000);
+      setScale(rounded);
     };
 
-    measure();
-    window.addEventListener('resize', measure);
-    (window as any).visualViewport?.addEventListener('resize', measure);
+    const scheduleMeasure = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(measure);
+    };
+
+    // Observe wrapper size only (no visualViewport listener)
+    roRef.current = new ResizeObserver(scheduleMeasure);
+    if (wrapRef.current) roRef.current.observe(wrapRef.current);
+
+    // initial measure
+    scheduleMeasure();
+
+    // basic window resize as a fallback (throttled via rAF)
+    const onWinResize = scheduleMeasure;
+    window.addEventListener('resize', onWinResize);
 
     return () => {
-      window.removeEventListener('resize', measure);
-      (window as any).visualViewport?.removeEventListener('resize', measure);
+      window.removeEventListener('resize', onWinResize);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      roRef.current?.disconnect();
     };
   }, [width, height]);
 
   return (
-    <section
-      ref={shellRef}
-      className="fixed inset-0 bg-[#0a0f16] text-slate-100 flex items-center justify-center overflow-hidden"
-    >
-      {/* Centered slide */}
+    <section className="fixed inset-0 bg-[#0a0f16] text-slate-100 overflow-hidden">
+      {/* wrapper fills the true viewport height; dvh prevents iOS URL bar jumps */}
       <div
-        className="shadow-[0_0_60px_rgba(56,189,248,.15)]"
-        style={{
-          width,
-          height,
-          transform: `scale(${scale})`,
-          transformOrigin: 'center center',
-          background:
-            'radial-gradient(1200px 600px at 15% 10%, rgba(16,185,129,.08), transparent 60%), radial-gradient(1200px 600px at 85% 90%, rgba(236,72,153,.08), transparent 60%), linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02))',
-          borderRadius: 18,
-          border: '1px solid rgba(255,255,255,.08)',
-          overflow: 'hidden',
-        }}
+        ref={wrapRef}
+        className="w-full h-dvh grid place-items-center"
+        style={{ height: '100dvh' }} // fallback if Tailwind lacks h-dvh
       >
-        {children}
+        <div
+          className="shadow-[0_0_60px_rgba(56,189,248,.15)] will-change-transform"
+          style={{
+            width,
+            height,
+            transform: `scale(${scale})`,
+            transformOrigin: 'center center',
+            background:
+              'radial-gradient(1200px 600px at 15% 10%, rgba(16,185,129,.08), transparent 60%), radial-gradient(1200px 600px at 85% 90%, rgba(236,72,153,.08), transparent 60%), linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02))',
+            borderRadius: 18,
+            border: '1px solid rgba(255,255,255,.08)',
+            overflow: 'hidden',
+          }}
+        >
+          {children}
+        </div>
       </div>
     </section>
   );
