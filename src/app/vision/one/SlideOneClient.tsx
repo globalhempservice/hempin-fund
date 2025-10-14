@@ -5,7 +5,7 @@ import Link from 'next/link';
 import SlideFrame from '@/components/SlideFrame';
 
 
-export default function SlideOne() {
+export default function SlideOneClient() {
   return (
     <SlideFrame title="Hemp’in — Vision (1/2)">
       <div className="h-full w-full p-10 grid grid-rows-[auto_1fr_auto]">

@@ -2,7 +2,7 @@ import SlideFrame from '@/components/SlideFrame';
 import Link from 'next/link';
 
 
-export default function SlideTwo() {
+export default function SlideTwoClient() {
   return (
     <SlideFrame title="Hemp’in — Vision (2/2)">
       <div className="h-full w-full p-10 grid grid-rows-[auto_1fr_auto]">
